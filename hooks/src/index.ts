@@ -5,11 +5,14 @@ const app = express();
 
 const client = new PrismaClient();
 
+app.use(express.json());
 app.post("/hooks/catch/:userId/:taskId", async (req, res) => {
   const userId = req.params.userId;
   const taskId = req.params.taskId;
   const body = req.body;
 
+  console.log(`body`,body);
+  
 
   await client.$transaction(async (tx) => {
     const run = await client.taskRun.create({
