@@ -24,19 +24,33 @@ model User {
 model Task {
   id      String   @id @default(uuid())
   trigger Trigger?
+  action  Action[]
 }
 
 model Trigger {
-  id        String            @id @default(uuid())
-  taskId    String            @unique
+  id        String           @id @default(uuid())
+  taskId    String           @unique
   triggerId String
-  type      AvailableTriggers @relation(fields: [triggerId], references: [id])
-  task      Task              @relation(fields: [taskId], references: [id])
+  type      AvailableTrigger @relation(fields: [triggerId], references: [id])
+  task      Task             @relation(fields: [taskId], references: [id])
 }
 
-model AvailableTriggers {
+model Action {
+  id       String          @id @default(uuid())
+  actionId String        
+  action   AvailableAction @relation(fields: [actionId], references: [id])
+  taskId   String          @unique
+  task     Task            @relation(fields: [taskId], references: [id])
+}
+
+model AvailableAction {
+  id     String   @id @default(uuid())
+  name   String
+  Action Action[]
+}
+
+model AvailableTrigger {
   id   String @id @default(uuid())
   name String
-
   Trigger Trigger[]
 }
