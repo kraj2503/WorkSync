@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  // output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -19,12 +19,16 @@ model User {
   name     String
   email    String
   password String
+  tasks    Task[]
 }
 
 model Task {
-  id      String   @id @default(uuid())
+  id      String    @id @default(uuid())
   trigger Trigger?
   action  Action[]
+  taskRun TaskRun[]
+  userId  Int
+  user    User      @relation(fields: [userId], references: [userId])
 }
 
 model Trigger {
@@ -37,9 +41,9 @@ model Trigger {
 
 model Action {
   id       String          @id @default(uuid())
-  actionId String        
+  actionId String
   action   AvailableAction @relation(fields: [actionId], references: [id])
-  taskId   String          @unique
+  taskId   String        
   task     Task            @relation(fields: [taskId], references: [id])
 }
 
@@ -50,7 +54,22 @@ model AvailableAction {
 }
 
 model AvailableTrigger {
-  id   String @id @default(uuid())
-  name String
+  id      String    @id @default(uuid())
+  name    String
   Trigger Trigger[]
+}
+
+model TaskRun {
+  id     String @id @default(uuid())
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id])
+  taskRunOutbox TaskRunOutbox?
+  metadata Json?
+}
+
+model TaskRunOutbox {
+  id       String @id @default(uuid())
+  taskRunId String @unique
+  task      TaskRun   @relation(fields: [taskRunId], references: [id])
+  // data      String
 }
