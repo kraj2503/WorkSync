@@ -37,6 +37,7 @@ model Trigger {
   triggerId String
   type      AvailableTrigger @relation(fields: [triggerId], references: [id])
   task      Task             @relation(fields: [taskId], references: [id])
+  sortingOrder Int @default(0)
 }
 
 model Action {
