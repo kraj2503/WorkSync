@@ -1,0 +1,14 @@
+{
+  "name": "@repo/db",
+  "version": "0.0.0",
+  "devDependencies": {
+    "prisma": "^6.8.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.8.2"
+  },
+  "scripts": {
+  "generate": "echo '📦 Running Prisma generate' && bunx prisma generate"
+
+  }
+}

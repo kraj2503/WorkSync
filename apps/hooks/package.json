@@ -1,0 +1,24 @@
+{
+  "name": "hooks",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "ts-node-dev": "^2.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
+  "dev": "bun --watch index.ts",
+  "start": "bun index.ts",
+  "build": "bunx tsc",
+  "check-types": "bunx tsc --noEmit"
+},
+  "dependencies": {
+    "@types/express": "^5.0.2",
+    "express": "^5.1.0",
+    "@repo/db": "*"
+  }
+}

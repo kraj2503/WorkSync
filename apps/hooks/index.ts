@@ -33,4 +33,9 @@ app.post("/hooks/catch/:userId/:taskId", async (req, res) => {
   })
 });
 
-app.listen(3000);
+const PORT = 3003
+
+app.listen(PORT,()=>{
+    console.log(`Hooks server is running on`,PORT)
+    
+});
