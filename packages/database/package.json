@@ -8,7 +8,8 @@
     "@prisma/client": "^6.8.2"
   },
   "scripts": {
-  "generate": "echo '📦 Running Prisma generate' && bunx prisma generate"
+  "generate": "echo '📦 Running Prisma generate' && bunx prisma generate",
+   "studio": "bunx prisma studio"
 
   }
 }
