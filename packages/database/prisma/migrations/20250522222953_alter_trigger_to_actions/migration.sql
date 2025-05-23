@@ -5,7 +5,7 @@
 
 */
 -- AlterTable
-ALTER TABLE "Action" ADD COLUMN     "sortingOrder" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "Action" ADD COLUMN    "sortingOrder" INTEGER NOT NULL DEFAULT 0;
 
 -- AlterTable
 ALTER TABLE "Trigger" DROP COLUMN "sortingOrder";
