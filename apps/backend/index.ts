@@ -4,22 +4,14 @@ import { taskRouter } from "./router/taskRouter";
 import cors from "cors";
 
 const app = express();
-app.use(express.json())
+app.use(express.json());
 app.use(cors());
 
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/task", taskRouter);
 
-app.use("/api/v1/user",userRouter);
-app.use("/api/v1/task",taskRouter);
+const PORT = 3000;
 
-const PORT = 3000
-
-app.listen(PORT,()=>{
-    console.log(`backend server is running on`,PORT)
-    
+app.listen(PORT, () => {
+  console.log(`backend server is running on`, PORT);
 });
-
-
-
-
-
-

@@ -15,10 +15,11 @@ datasource db {
 }
 
 model User {
-  userId   Int    @id @default(autoincrement())
+  userId   Int     @id @default(autoincrement())
   name     String
   email    String
   password String
+  verified Boolean @default(false)
   tasks    Task[]
 }
 
@@ -40,12 +41,12 @@ model Trigger {
 }
 
 model Action {
-  id       String          @id @default(uuid())
-  actionId String
-  action   AvailableAction @relation(fields: [actionId], references: [id])
-  taskId   String        
-  task     Task            @relation(fields: [taskId], references: [id])
-  sortingOrder Int @default(0)
+  id           String          @id @default(uuid())
+  actionId     String
+  action       AvailableAction @relation(fields: [actionId], references: [id])
+  taskId       String
+  task         Task            @relation(fields: [taskId], references: [id])
+  sortingOrder Int             @default(0)
 }
 
 model AvailableAction {
@@ -61,16 +62,16 @@ model AvailableTrigger {
 }
 
 model TaskRun {
-  id     String @id @default(uuid())
-  taskId String
-  task   Task   @relation(fields: [taskId], references: [id])
+  id            String         @id @default(uuid())
+  taskId        String
+  task          Task           @relation(fields: [taskId], references: [id])
   taskRunOutbox TaskRunOutbox?
-  metadata Json?
+  metadata      Json?
 }
 
 model TaskRunOutbox {
-  id       String @id @default(uuid())
-  taskRunId String @unique
-  task      TaskRun   @relation(fields: [taskRunId], references: [id])
+  id        String  @id @default(uuid())
+  taskRunId String  @unique
+  task      TaskRun @relation(fields: [taskRunId], references: [id])
   // data      String
 }

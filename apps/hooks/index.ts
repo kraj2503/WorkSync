@@ -11,14 +11,13 @@ app.post("/hooks/catch/:userId/:taskId", async (req, res) => {
   const taskId = req.params.taskId;
   const body = req.body;
 
-  console.log(`body`,body);
-  
+  console.log(`body`, body);
 
   await client.$transaction(async (tx) => {
     const run = await client.taskRun.create({
       data: {
         taskId: taskId,
-        metadata:body
+        metadata: body,
       },
     });
 
@@ -29,13 +28,12 @@ app.post("/hooks/catch/:userId/:taskId", async (req, res) => {
     });
   });
   res.send({
-    "posted":"taskoutbox"
-  })
+    posted: "taskoutbox",
+  });
 });
 
-const PORT = 3003
+const PORT = 3001;
 
-app.listen(PORT,()=>{
-    console.log(`Hooks server is running on`,PORT)
-    
+app.listen(PORT, () => {
+  console.log(`Hooks server is running on`, PORT);
 });
