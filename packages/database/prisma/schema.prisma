@@ -37,7 +37,6 @@ model Trigger {
   triggerId String
   type      AvailableTrigger @relation(fields: [triggerId], references: [id])
   task      Task             @relation(fields: [taskId], references: [id])
-  sortingOrder Int @default(0)
 }
 
 model Action {
@@ -46,6 +45,7 @@ model Action {
   action   AvailableAction @relation(fields: [actionId], references: [id])
   taskId   String        
   task     Task            @relation(fields: [taskId], references: [id])
+  sortingOrder Int @default(0)
 }
 
 model AvailableAction {

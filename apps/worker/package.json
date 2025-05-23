@@ -1,22 +1,22 @@
 {
-  "name": "processor",
+  "name": "worker",
   "module": "index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {
     "@types/bun": "latest"
   },
-   "scripts": {
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
     "dev": "bun --watch index.ts",
     "start": "bun index.ts",
     "build": "bunx tsc",
     "check-types": "bunx tsc --noEmit"
   },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
   "dependencies": {
     "kafkajs": "^2.2.4",
-    "@repo/config": "*"
+     "@repo/config": "*"
   }
 }
