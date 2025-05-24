@@ -1,5 +1,5 @@
-import { Router, type Request, type Response } from "express";
-import { authMiddleware } from "../middleware";
+import { Router } from "express";
+import { authMiddleware, type AuthRequest } from "../middleware";
 import { SignInSchema, SignUpSchema } from "@repo/types";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, verifyPassword, signJWT } from "../jwt";
@@ -45,7 +45,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post("/signin", async (req:Request, res:Response) => {
+router.post("/signin", async (req, res) => {
   const body = req.body;
   const parsedData = SignInSchema.safeParse(body);
   if (!parsedData.success) {
@@ -75,31 +75,29 @@ router.post("/signin", async (req:Request, res:Response) => {
   return res.status(200).json({ token });
 });
 
-router.get("/getUser/:id", authMiddleware, async (req, res) => {
-  const userId = req.params.id;
-  if (!userId)
-    return res.status(411).json({
-      message: "user id not sent",
-    });
+router.get("/getUser/", authMiddleware, async (req: AuthRequest, res) => {
+
   const userExists = await client.user.findFirst({
     where: {
-      userId: parseInt(userId),
+      email:req.email,
+      name:req.name
     },
     select: {
       name: true,
       email: true,
+      verified:true
     },
   });
+
 
   if (!userExists)
     return res.status(404).json({
       messgae: "User not Found",
     });
 
-
-    return res.json({
-      userExists
-    })
+  return res.json({
+    userExists,
+  });
 });
 
 export const userRouter = router;

@@ -18,6 +18,7 @@ export const verifyPassword = async (password: string, hash: string) => {
 export const signJWT = (user: any) => {
   const token = jwt.sign(
     {
+      
       userName: user.name,
       email: user.email,
       verified: user.verified,
