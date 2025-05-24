@@ -1,14 +1,12 @@
-import { Router } from "express";
+import { Router, type Request, type Response } from "express";
 import { authMiddleware } from "../middleware";
 import { SignInSchema, SignUpSchema } from "@repo/types";
 import { PrismaClient } from "@prisma/client";
-import { hashPassword, verifyPassword } from "../hashPassword";
-import jwt, { sign } from "jsonwebtoken";
+import { hashPassword, verifyPassword, signJWT } from "../jwt";
+
 const router = Router();
 
 const client = new PrismaClient();
-
-const SECRET_KEY = "mysecret";
 
 router.post("/signup", async (req, res) => {
   const body = req.body;
@@ -47,7 +45,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post("/signin", async (req, res) => {
+router.post("/signin", async (req:Request, res:Response) => {
   const body = req.body;
   const parsedData = SignInSchema.safeParse(body);
   if (!parsedData.success) {
@@ -77,22 +75,31 @@ router.post("/signin", async (req, res) => {
   return res.status(200).json({ token });
 });
 
-router.get("/getUser", authMiddleware, (req, res) => {
-  console.log(`get user`);
+router.get("/getUser/:id", authMiddleware, async (req, res) => {
+  const userId = req.params.id;
+  if (!userId)
+    return res.status(411).json({
+      message: "user id not sent",
+    });
+  const userExists = await client.user.findFirst({
+    where: {
+      userId: parseInt(userId),
+    },
+    select: {
+      name: true,
+      email: true,
+    },
+  });
+
+  if (!userExists)
+    return res.status(404).json({
+      messgae: "User not Found",
+    });
+
+
+    return res.json({
+      userExists
+    })
 });
 
 export const userRouter = router;
-
-const signJWT = (user: any) => {
-  const token = jwt.sign(
-    {
-      userName: user.name,
-      email: user.email,
-      verified: user.verified,
-    },
-    SECRET_KEY,
-    { expiresIn: "2 days" }
-  );
-
-  return token;
-};
