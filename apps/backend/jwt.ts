@@ -16,12 +16,11 @@ export const verifyPassword = async (password: string, hash: string) => {
 };
 
 export const signJWT = (user: any) => {
+  console.log(`user:  `,user);
+  
   const token = jwt.sign(
     {
-      
-      userName: user.name,
-      email: user.email,
-      verified: user.verified,
+      userId:user.userId,
     },
     JWT_SECRET_KEY,
     { expiresIn: "2 days" }

@@ -2,22 +2,21 @@ import type { Request,Response,NextFunction } from "express";
 import { verifyJwt } from "./jwt";
 
 export interface AuthRequest extends Request {
-  email:string,
-  name:string
+ userId:number,
 }
 
 interface JwtPayload {
-  id: number;
-  name: string;
-  email: string;
+  userId: number;
 }
 
 export function authMiddleware(req:AuthRequest, res:Response, next:NextFunction){
     const token = req.headers.authorization as unknown as string;
     try{
         const payload = verifyJwt(token) as JwtPayload;
-        req.email = payload.email;
-        req.name = payload.name;
+       console.log(`payload: `,payload);
+       
+        req.userId=payload.userId,
+
         next()
 
     }

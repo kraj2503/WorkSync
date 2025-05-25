@@ -48,6 +48,7 @@ router.post("/signup", async (req, res) => {
 router.post("/signin", async (req, res) => {
   const body = req.body;
   const parsedData = SignInSchema.safeParse(body);
+  console.log(parsedData.error);
   if (!parsedData.success) {
     return res.status(411).json({
       message: "Wrong Inputs",
@@ -56,10 +57,17 @@ router.post("/signin", async (req, res) => {
 
   const userExists = await client.user.findFirst({
     where: {
-      name: parsedData.data?.userName,
+      email: parsedData.data?.email
     },
+    select:{
+      userId:true,
+      name:true,
+      password:true
+    }
+    ,
   });
   if (!userExists) return res.status(403).json({ message: "Invalid Username" });
+console.log(`userExist`,userExists);
 
   const auth = await verifyPassword(
     parsedData.data.password,
@@ -69,8 +77,10 @@ router.post("/signin", async (req, res) => {
   if (!auth) {
     return res.status(403).json({ message: "Invalid Password" });
   }
+console.log(`userExists: `,userExists);
 
   const token = signJWT(userExists);
+console.log(`token:   `,token);
 
   return res.status(200).json({ token });
 });
@@ -79,10 +89,10 @@ router.get("/getUser/", authMiddleware, async (req: AuthRequest, res) => {
 
   const userExists = await client.user.findFirst({
     where: {
-      email:req.email,
-      name:req.name
+      userId:req.userId
     },
     select: {
+      userId:true,
       name: true,
       email: true,
       verified:true

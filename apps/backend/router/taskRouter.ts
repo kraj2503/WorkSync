@@ -1,16 +1,98 @@
 import { Router } from "express";
-import { authMiddleware } from "../middleware";
+import { authMiddleware, type AuthRequest } from "../middleware";
+import { TaskCreateSchema } from "@repo/types";
+import { PrismaClient } from "@prisma/client";
 
 const router = Router();
+const client = new PrismaClient();
 
-router.post("/add", authMiddleware, (req, res) => {
-  console.log(`add task Handler`);
+
+router.post("/add", authMiddleware, async (req: AuthRequest, res) => {
+  const body = req.body;
+  
+  const parsedData = TaskCreateSchema.safeParse(body);
+  
+  if (!parsedData.success)
+    return res.status(411).json({
+      message: "Invalid body",
+    });
+console.log(req.userId);
+
+  const task = await client.task.create({
+    data: {
+      userId: req.userId??1,
+      trigger: {
+        create: {
+          triggerId: parsedData.data.trigger.availableTriggerId,
+        },
+      },
+      action: {
+        create: parsedData.data.actions.map((x, index) => ({
+          actionId: x.availableActionId,
+          sortingOrder: index,
+        })),
+      },
+    },
+  });
+  return res.json({
+    task,
+  });
 });
-router.get("/getTasks", authMiddleware, (req, res) => {
-  console.log(`getTask Handler`);
+
+
+router.get("/getTasks", authMiddleware, async (req: AuthRequest, res) => {
+  const tasks = await client.task.findMany({
+    where: {
+      userId: req.userId,
+    },
+    include: {
+      trigger: {
+        include: {
+          type: true,
+        },
+      },
+      action: {
+        include: {
+          action: true,
+        },
+        orderBy: {
+          sortingOrder: "asc",
+        },
+      },
+    },
+  });
+
+  return res.json({
+    tasks,
+  });
 });
-router.get("/:getTasks", authMiddleware, (req, res) => {
-  console.log(`getTask Handler`);
+
+router.get("/getTasks/:getTask", authMiddleware, async (req, res) => {
+  const taskId = req.params.getTask;
+
+ const task = await client.task.findMany({
+    where: {
+    id:taskId
+    },
+    include: {
+      trigger: {
+        include: {
+          type: true,
+        },
+      },
+      action: {
+        include: {
+          action: true,
+        },
+        orderBy: {
+          sortingOrder: "asc",
+        },
+      },
+    },
+  });
+  return res.json({
+    task,
+  });
 });
 
 export const taskRouter = router;
