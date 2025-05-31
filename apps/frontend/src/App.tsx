@@ -1,12 +1,16 @@
 import Appbar from "./components/Appbar";
+import Hero from "./components/Hero";
+import { ThemeProvider } from "./components/theme-provider";
 import "./index.css";
 
 export function App() {
   return (
-    <main className="">
-<Appbar/>
-
-    </main>
+    <ThemeProvider defaultDark={false} storageKey="vite-ui-theme">
+      <main className="">
+        <Appbar />
+        <Hero />
+      </main>
+    </ThemeProvider>
   );
 }
 
