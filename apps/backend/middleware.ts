@@ -12,11 +12,8 @@ interface JwtPayload {
 export function authMiddleware(req:AuthRequest, res:Response, next:NextFunction){
     const token = req.headers.authorization as unknown as string;
     try{
-        const payload = verifyJwt(token) as JwtPayload;
-       console.log(`payload: `,payload);
-       
-        req.userId=payload.userId,
-
+        const payload = verifyJwt(token) as JwtPayload;       
+        req.userId=payload.userId;
         next()
 
     }

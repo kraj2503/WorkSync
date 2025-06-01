@@ -48,7 +48,6 @@ router.post("/signup", async (req, res) => {
 router.post("/signin", async (req, res) => {
   const body = req.body;
   const parsedData = SignInSchema.safeParse(body);
-  console.log(parsedData.error);
   if (!parsedData.success) {
     return res.status(411).json({
       message: "Wrong Inputs",
@@ -57,17 +56,15 @@ router.post("/signin", async (req, res) => {
 
   const userExists = await client.user.findFirst({
     where: {
-      email: parsedData.data?.email
+      email: parsedData.data?.email,
     },
-    select:{
-      userId:true,
-      name:true,
-      password:true
-    }
-    ,
+    select: {
+      userId: true,
+      name: true,
+      password: true,
+    },
   });
   if (!userExists) return res.status(403).json({ message: "Invalid Username" });
-console.log(`userExist`,userExists);
 
   const auth = await verifyPassword(
     parsedData.data.password,
@@ -77,28 +74,26 @@ console.log(`userExist`,userExists);
   if (!auth) {
     return res.status(403).json({ message: "Invalid Password" });
   }
-console.log(`userExists: `,userExists);
+  console.log(`userExists: `, userExists);
 
   const token = signJWT(userExists);
-console.log(`token:   `,token);
+  console.log(`token:   `, token);
 
   return res.status(200).json({ token });
 });
 
 router.get("/getUser/", authMiddleware, async (req: AuthRequest, res) => {
-
   const userExists = await client.user.findFirst({
     where: {
-      userId:req.userId
+      userId: req.userId,
     },
     select: {
-      userId:true,
+      userId: true,
       name: true,
       email: true,
-      verified:true
+      verified: true,
     },
   });
-
 
   if (!userExists)
     return res.status(404).json({
@@ -108,6 +103,29 @@ router.get("/getUser/", authMiddleware, async (req: AuthRequest, res) => {
   return res.json({
     userExists,
   });
+});
+
+router.post("/deleteUser", authMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.body.userId;
+
+    const deleteUser = await client.user.delete({
+      where: {
+        userId,
+      },
+    });
+    if (deleteUser) {
+      return res.json({
+        message: "user Deleted Successfully",
+      });
+    } else {
+      throw new Error();
+    }
+  } catch (e) {
+    return res.json({
+      message: " User Deletion failed",
+    });
+  }
 });
 
 export const userRouter = router;

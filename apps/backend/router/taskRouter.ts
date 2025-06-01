@@ -39,7 +39,6 @@ console.log(req.userId);
   });
 });
 
-
 router.get("/getTasks", authMiddleware, async (req: AuthRequest, res) => {
   const tasks = await client.task.findMany({
     where: {
@@ -93,6 +92,38 @@ router.get("/getTasks/:getTask", authMiddleware, async (req, res) => {
   return res.json({
     task,
   });
+});
+
+router.delete("/deleteTask/:taskId",authMiddleware,async (req:AuthRequest,res)=>{
+
+const taskId = req.params.taskId;
+try{
+
+  const deleteTask = await client.task.delete({
+    where:{
+      id:taskId
+    },
+    
+  });
+    if(deleteTask)
+    return res.json({
+      task:taskId,
+      message:"Task deleted"
+    })
+    else{
+      throw new Error()
+    }
+}
+catch(e){
+   
+    return res.json({
+      task:taskId,
+      message:"deletion failed"
+    })
+}
+
+
+
 });
 
 export const taskRouter = router;

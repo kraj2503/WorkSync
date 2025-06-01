@@ -13,7 +13,7 @@ app.post("/hooks/catch/:userId/:taskId", async (req, res) => {
 
   console.log(`body`, body);
 
-  await client.$transaction(async (tx) => {
+  await client.$transaction(async () => {
     const run = await client.taskRun.create({
       data: {
         taskId: taskId,
