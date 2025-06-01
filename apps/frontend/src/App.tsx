@@ -5,12 +5,16 @@ import "./index.css";
 
 export function App() {
   return (
+<>
+
     <ThemeProvider defaultDark={false} storageKey="vite-ui-theme">
       <main className="">
         <Appbar />
-        <Hero />
+        
+        <Hero user={"user"}/>
       </main>
     </ThemeProvider>
+</>
   );
 }
 
