@@ -1,17 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  // output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -25,28 +19,28 @@ model User {
 
 model Task {
   id      String    @id @default(uuid())
-  trigger Trigger?
-  action  Action[]
-  taskRun TaskRun[]
   userId  Int
+  action  Action[]
   user    User      @relation(fields: [userId], references: [userId])
+  taskRun TaskRun[]
+  trigger Trigger?
 }
 
 model Trigger {
   id        String           @id @default(uuid())
   taskId    String           @unique
   triggerId String
-  type      AvailableTrigger @relation(fields: [triggerId], references: [id])
   task      Task             @relation(fields: [taskId], references: [id])
+  type      AvailableTrigger @relation(fields: [triggerId], references: [id])
 }
 
 model Action {
   id           String          @id @default(uuid())
   actionId     String
-  action       AvailableAction @relation(fields: [actionId], references: [id])
   taskId       String
-  task         Task            @relation(fields: [taskId], references: [id])
   sortingOrder Int             @default(0)
+  action       AvailableAction @relation(fields: [actionId], references: [id])
+  task         Task            @relation(fields: [taskId], references: [id])
 }
 
 model AvailableAction {
@@ -64,14 +58,13 @@ model AvailableTrigger {
 model TaskRun {
   id            String         @id @default(uuid())
   taskId        String
+  metadata      Json?
   task          Task           @relation(fields: [taskId], references: [id])
   taskRunOutbox TaskRunOutbox?
-  metadata      Json?
 }
 
 model TaskRunOutbox {
   id        String  @id @default(uuid())
   taskRunId String  @unique
   task      TaskRun @relation(fields: [taskRunId], references: [id])
-  // data      String
 }

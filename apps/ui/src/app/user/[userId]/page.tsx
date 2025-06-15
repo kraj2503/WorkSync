@@ -1,6 +1,6 @@
 
 
-export default async function User({params}) {
+export default async function User({params}:{params:r}) {
     
     const userId = await params.userId;
     
