@@ -12,12 +12,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { ReactElement, useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@repo/supabaseclient";
 
 export default function SignIn() {
   const router = useRouter();
   const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
-
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmailValue(e.target.value);
   };
@@ -25,20 +27,29 @@ export default function SignIn() {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordValue(e.target.value);
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     /*
 Use Input validation and submit
         */
-    if (!emailValue || !passwordValue) {
-      alert("Please fill in both fields.");
-      
-      return;
-    }
-    let userId = 1;
-    router.push(`/user/${userId}`);
+    setLoading(true);
+    const { data, error } = await supabase.auth.signUp({
+      email: emailValue,
+      password: passwordValue,
+      options: {
+        emailRedirectTo: "https://example.com/welcome",
+      },
+    });
+console.log(data)
+
+    if (error) setError(error.message);
+    else setError(null);
+    setLoading(false);
+
+  
   };
+  if(loading)return<>loading</>
   return (
     <div className="bg-amber-50 min-h-screen flex items-center justify-around px-6 ">
       <div className="grid grid-cols-1 md:grid-cols-2 max-w-6xl w-full gap-12 items-center">
@@ -67,10 +78,7 @@ Use Input validation and submit
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form
-              className="space-y-4"
-              onSubmit={handleSubmit}
-            >
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -90,20 +98,20 @@ Use Input validation and submit
                   onChange={handlePasswordChange}
                 />
               </div>
-          <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full cursor-pointer">
-              Login
-            </Button>
-            <Button variant="outline" className="w-full cursor-pointer">
-              Login with Google
-            </Button>
-            <p className="text-sm text-gray-500">
-              Don't have an account?{" "}
-              <a href="/signUp" className="underline hover:text-orange-600">
-                Sign up here
-              </a>
-            </p>
-          </CardFooter>
+              <CardFooter className="flex flex-col gap-3">
+                <Button type="submit" className="w-full cursor-pointer">
+                  Login
+                </Button>
+                <Button variant="outline" className="w-full cursor-pointer">
+                  Login with Google
+                </Button>
+                <p className="text-sm text-gray-500">
+                  Don't have an account?{" "}
+                  <a href="/signUp" className="underline hover:text-orange-600">
+                    Sign up here
+                  </a>
+                </p>
+              </CardFooter>
             </form>
           </CardContent>
         </Card>
