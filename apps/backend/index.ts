@@ -14,7 +14,7 @@ app.use((req, res, next) => {
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/task", taskRouter);
 
-const PORT = 3000;
+const PORT = 3001;
 
 app.listen(PORT, () => {
   console.log(`backend server is running on`, PORT);

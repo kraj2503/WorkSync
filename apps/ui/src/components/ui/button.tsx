@@ -24,6 +24,9 @@ const buttonVariants = cva(
           "text-white font-sans shadow-xl  bg-amber-700 hover:bg-amber-500 cursor-pointer",
         headButton:
           "bg-white dark:bg-red-500 text-secondary-foreground shadow-xs hover:bg-secondary/80 ",
+    
+        purple:
+          "bg-purple-400 text-secondary-foreground shadow-xs hover:bg-purple/60  ",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
