@@ -23,7 +23,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="pt-8 flex justify-center bg-slate-200 h-full">
+    <div className="pt-8 flex justify-center  h-full">
       <div className="max-w-screen-lg w-full">
         <div className="flex justify-between items-center mb-4">
           <div className="text-xl font-semibold">My tasks</div>
@@ -62,6 +62,7 @@ function useTasks(): [boolean, any[]] {
   return [loading, task];
 }
 function Tasks({ task }: { task: any[] }) {
+  const router = useRouter()
   function handleStatusToggle(taskId: string, newValue: boolean) {
     console.log("Toggle status for:", taskId, "New Value:", newValue);
     // 🔁 You can now call an API here or update local state if needed
@@ -80,7 +81,11 @@ function Tasks({ task }: { task: any[] }) {
       </TableHeader>
       <TableBody>
         {task.map((t, idx) => (
-          <TableRow key={t.id}>
+          <TableRow
+            className="cursor-pointer hover:bg-slate-200"
+            key={t.id}
+            onClick={() => router.push(`/task:${t.id}`)}
+          >
             <TableCell className="font-medium">{idx + 1}</TableCell>
             <TableCell>{t.trigger?.type?.name || "N/A"}</TableCell>
             <TableCell>
@@ -93,6 +98,7 @@ function Tasks({ task }: { task: any[] }) {
             <TableCell className="text-right">
               <input
                 type="checkbox"
+                onClick={(e) => e.stopPropagation()}
                 onChange={(e) => handleStatusToggle(t.id, e.target.checked)}
               />
             </TableCell>

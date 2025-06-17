@@ -10,7 +10,10 @@ export default function Appbar() {
   // if (condition) return <></>;
 
   function PushSignin() {
-    router.push("/signIn");
+    router.push("/auth/signIn");
+  }
+  function PushLogin() {
+    router.push("/auth/Login");
   }
 
   return (
@@ -19,10 +22,10 @@ export default function Appbar() {
         <div className="text-xl font-bold px-7 text-white cursor-pointer" onClick={()=>{router.push('/')}}>WorkSync</div>
         <div className="flex space-x-6">
           <div>
-            <Button variant="home">Home</Button>
+            {/* <Button variant="home">Home</Button> */}
           </div>
           <div>
-            <Button variant="home">Login</Button>
+            <Button   onClick={PushLogin} variant="home">Login</Button>
           </div>
           <div>
             <Button variant="signup" onClick={PushSignin}>
