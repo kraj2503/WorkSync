@@ -4,6 +4,15 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BACKEND_URL } from "@repo/config";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -14,7 +23,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="pt-8 flex justify-center">
+    <div className="pt-8 flex justify-center bg-slate-200 h-full">
       <div className="max-w-screen-lg w-full">
         <div className="flex justify-between items-center mb-4">
           <div className="text-xl font-semibold">My tasks</div>
@@ -36,8 +45,8 @@ function useTasks(): [boolean, any[]] {
     axios
       .get(`${BACKEND_URL}/api/v1/task/getTasks`, {
         headers: {
-          Authorization: localStorage.getItem("Auth")
-        }
+          Authorization: localStorage.getItem("Auth"),
+        },
       })
       .then((res) => {
         setTasks(res.data.tasks);
@@ -53,34 +62,43 @@ function useTasks(): [boolean, any[]] {
   return [loading, task];
 }
 function Tasks({ task }: { task: any[] }) {
+  function handleStatusToggle(taskId: string, newValue: boolean) {
+    console.log("Toggle status for:", taskId, "New Value:", newValue);
+    // 🔁 You can now call an API here or update local state if needed
+  }
+
   return (
-    <div className="space-y-4 mt-6">
-      {task.length === 0 ? (
-        <div className="text-gray-500">No tasks found.</div>
-      ) : (
-        task.map((t, idx) => (
-          <div
-            key={t.id || idx}
-            className="p-4 bg-gray-100 rounded-xl shadow-sm border border-gray-300"
-          >
-            <div className="text-lg font-semibold mb-1">Task ID: {t.id}</div>
-
-            <div className="text-sm text-gray-700 mb-2">
-              <span className="font-medium">Trigger:</span>{" "}
-              {t.trigger?.type?.name ?? "N/A"}
-            </div>
-
-            <div className="text-sm text-gray-700">
-              <span className="font-medium">Actions:</span>
-              <ul className="list-disc list-inside pl-2">
+    <Table>
+      <TableCaption></TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">#</TableHead>
+          <TableHead>Trigger</TableHead>
+          <TableHead>Actions</TableHead>
+          <TableHead className="text-right">Status</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {task.map((t, idx) => (
+          <TableRow key={t.id}>
+            <TableCell className="font-medium">{idx + 1}</TableCell>
+            <TableCell>{t.trigger?.type?.name || "N/A"}</TableCell>
+            <TableCell>
+              <ul className="space-y-1">
                 {t.action.map((a: any) => (
                   <li key={a.id}>{a.action?.name ?? "Unknown Action"}</li>
                 ))}
               </ul>
-            </div>
-          </div>
-        ))
-      )}
-    </div>
+            </TableCell>
+            <TableCell className="text-right">
+              <input
+                type="checkbox"
+                onChange={(e) => handleStatusToggle(t.id, e.target.checked)}
+              />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
