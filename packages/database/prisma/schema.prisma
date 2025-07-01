@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,29 +10,35 @@ datasource db {
 }
 
 model User {
-  userId   Int     @id @default(autoincrement())
+  userId   String  @id 
   name     String
   email    String
-  password String
+  password String? 
   verified Boolean @default(false)
   tasks    Task[]
+
+  @@map("User")
 }
 
 model Task {
   id      String    @id @default(uuid())
-  userId  Int
+  userId  String      
   action  Action[]
-  user    User      @relation(fields: [userId], references: [userId])
+  user    User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
   taskRun TaskRun[]
   trigger Trigger?
+
+  @@map("Task")
 }
 
 model Trigger {
   id        String           @id @default(uuid())
   taskId    String           @unique
   triggerId String
-  task      Task             @relation(fields: [taskId], references: [id])
+  task      Task             @relation(fields: [taskId], references: [id], onDelete: Cascade)
   type      AvailableTrigger @relation(fields: [triggerId], references: [id])
+
+  @@map("Trigger")
 }
 
 model Action {
@@ -40,31 +47,41 @@ model Action {
   taskId       String
   sortingOrder Int             @default(0)
   action       AvailableAction @relation(fields: [actionId], references: [id])
-  task         Task            @relation(fields: [taskId], references: [id])
+  task         Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("Action")
 }
 
 model AvailableAction {
   id     String   @id @default(uuid())
   name   String
   Action Action[]
+
+  @@map("AvailableAction")
 }
 
 model AvailableTrigger {
   id      String    @id @default(uuid())
   name    String
   Trigger Trigger[]
+
+  @@map("AvailableTrigger")
 }
 
 model TaskRun {
   id            String         @id @default(uuid())
   taskId        String
   metadata      Json?
-  task          Task           @relation(fields: [taskId], references: [id])
+  task          Task           @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskRunOutbox TaskRunOutbox?
+
+  @@map("TaskRun")
 }
 
 model TaskRunOutbox {
   id        String  @id @default(uuid())
   taskRunId String  @unique
-  task      TaskRun @relation(fields: [taskRunId], references: [id])
+  task      TaskRun @relation(fields: [taskRunId], references: [id], onDelete: Cascade)
+
+  @@map("TaskRunOutbox")
 }

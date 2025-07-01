@@ -39,10 +39,12 @@ console.log(req.userId);
   });
 });
 
-router.get("/getTasks", authMiddleware, async (req: AuthRequest, res) => {
+router.get("/getTasks",authMiddleware, async (req, res) => {
+  console.log("Auth. ", req.headers.authorization);
+  const userId: number = req.userId;
   const tasks = await client.task.findMany({
     where: {
-      userId: req.userId,
+      userId: userId,
     },
     include: {
       trigger: {

@@ -13,7 +13,7 @@ export default function Appbar() {
     router.push("/auth/signIn");
   }
   function PushLogin() {
-    router.push("/auth/Login");
+    router.push("/auth/login");
   }
 
   return (

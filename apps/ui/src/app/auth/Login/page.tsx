@@ -34,22 +34,24 @@ export default function Login() {
 Use Input validation and submit
         */
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: emailValue,
       password: passwordValue,
-      options: {
-        emailRedirectTo: "https://example.com/welcome",
-      },
     });
-console.log(data)
+    console.log(data);
 
-    if (error) setError(error.message);
-    else setError(null);
+    if (error) {
+      setError(error.message);
+      alert(`Login Failed: ${error.message}`); // More informative alert
+    } else {
+      setError(null);
+      alert("Login Successful!");
+      // Redirect to a dashboard or home page after successful login
+      router.push("/dashboard"); // Or wherever your protected route is
+    }
     setLoading(false);
-
-  
   };
-  if(loading)return<>loading</>
+  if (loading) return <>loading</>;
   return (
     <div className="bg-amber-50 min-h-screen flex items-center justify-around px-6 ">
       <div className="grid grid-cols-1 md:grid-cols-2 max-w-6xl w-full gap-12 items-center">

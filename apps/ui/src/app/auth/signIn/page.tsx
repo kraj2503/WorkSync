@@ -18,7 +18,7 @@ export default function SignIn() {
   const router = useRouter();
   const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmailValue(e.target.value);
@@ -34,20 +34,32 @@ export default function SignIn() {
 Use Input validation and submit
         */
     setLoading(true);
+    console.log(emailValue);
+    console.log(passwordValue);
+
     const { data, error } = await supabase.auth.signUp({
       email: emailValue,
       password: passwordValue,
+
       options: {
         emailRedirectTo: "https://example.com/welcome",
       },
     });
-console.log(data)
+    console.log(data);
 
-    if (error) setError(error.message);
-    else setError(null);
+    if (error) {
+      setError(error.message);
+      alert(`Sign up failed: ${error.message}`);
+    } else if (data.user) {
+      alert(
+        "Thanks for signing up! Please check your email for a confirmation link."
+      );
+
+    }
+
+
+
     setLoading(false);
-
-  
   };
   if(loading)return<>loading</>
   return (
