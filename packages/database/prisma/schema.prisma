@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,10 +9,10 @@ datasource db {
 }
 
 model User {
-  userId   String  @id 
+  userId   String  @id @db.Uuid
   name     String
   email    String
-  password String? 
+  password String?
   verified Boolean @default(false)
   tasks    Task[]
 
@@ -22,9 +21,9 @@ model User {
 
 model Task {
   id      String    @id @default(uuid())
-  userId  String      
+  userId  String    @db.Uuid
   action  Action[]
-  user    User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  user    User      @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
   taskRun TaskRun[]
   trigger Trigger?
 
