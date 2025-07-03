@@ -9,10 +9,9 @@ datasource db {
 }
 
 model User {
-  userId   String  @id @db.Uuid
-  name     String
+  userId   String  @id
+  name     String?
   email    String
-  password String?
   verified Boolean @default(false)
   tasks    Task[]
 
@@ -21,7 +20,7 @@ model User {
 
 model Task {
   id      String    @id @default(uuid())
-  userId  String    @db.Uuid
+  userId  String
   action  Action[]
   user    User      @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
   taskRun TaskRun[]

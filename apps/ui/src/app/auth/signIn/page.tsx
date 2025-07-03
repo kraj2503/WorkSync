@@ -30,9 +30,7 @@ export default function SignIn() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    /*
-Use Input validation and submit
-        */
+  
     setLoading(true);
     console.log(emailValue);
     console.log(passwordValue);
