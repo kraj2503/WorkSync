@@ -2,6 +2,8 @@ import express from "express";
 import { userRouter } from "./router/userRouter";
 import { taskRouter } from "./router/taskRouter";
 import cors from "cors";
+import { triggerRouter } from "./router/triggerRouter";
+import { actionRouter } from "./router/actionRouter";
 
 const app = express();
 app.use(express.json());
@@ -13,6 +15,8 @@ app.use((req, res, next) => {
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/task", taskRouter);
+app.use("/api/v1/trigger", triggerRouter);
+app.use("/api/v1/action", actionRouter);
 
 const PORT = 3001;
 
