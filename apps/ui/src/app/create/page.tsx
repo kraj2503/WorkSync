@@ -8,8 +8,8 @@ export default function TaskFlow() {
   const [selectedTrigger, setSelectedTrigger] = useState("");
   const [selectedAction, setSelectedAction] = useState<
     {
-      availableActionId: string;
-      availableActionName: string;
+      availableTaskId: string;
+      availableTaskName: string;
     }[]
   >([]);
 
@@ -24,8 +24,8 @@ export default function TaskFlow() {
           {selectedAction.map((action, index) => (
            <div className="flex justify-center w-full mt-5">
               <TaskCell
-              key={action.availableActionId}
-              name={action.availableActionName || "Action"}
+              key={action.availableTaskId}
+              name={action.availableTaskName || "Action"}
               index={2 + index}
               />
               </div>
@@ -35,8 +35,8 @@ export default function TaskFlow() {
             setSelectedAction((a) => [
               ...a,
               {
-                availableActionId: "",
-                availableActionName: "",
+                availableTaskId: "",
+                availableTaskName: "",
               },
             ]);
           }}
