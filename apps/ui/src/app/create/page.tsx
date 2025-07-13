@@ -5,46 +5,163 @@ import { TaskCell } from "../components/taskCell";
 import { Button } from "@/components/ui/button";
 
 export default function TaskFlow() {
-  const [selectedTrigger, setSelectedTrigger] = useState("");
+  const [selectedTrigger, setSelectedTrigger] = useState<{
+    id: string;
+    name: string;
+  }>();
   const [selectedAction, setSelectedAction] = useState<
     {
+      index: number;
       availableTaskId: string;
       availableTaskName: string;
     }[]
   >([]);
+
+  const [selectedModelIndex, setSelectedModelIndex] = useState<number | null>(
+    null
+  );
 
   return (
     <>
       {/* <Appbar /> */}
       <div className="flex justify-center flex-col min-h-screen">
         <div className="flex justify-center w-full">
-          <TaskCell name={selectedTrigger || "Trigger"} index={1} />
+          <TaskCell
+            name={selectedTrigger?.name || "Trigger"}
+            index={1}
+            onClick={() => {
+              setSelectedModelIndex(1);
+            }}
+          />
         </div>
-       
-          {selectedAction.map((action, index) => (
-           <div className="flex justify-center w-full mt-5">
-              <TaskCell
-              key={action.availableTaskId}
+
+        {selectedAction.map((action) => (
+          <div
+            key={action.availableTaskId}
+            className="flex justify-center w-full mt-5"
+          >
+            <TaskCell
               name={action.availableTaskName || "Action"}
-              index={2 + index}
-              />
-              </div>
-          ))}
-        <Button variant={"link"}
+              index={action.index}
+              onClick={() => {
+                setSelectedModelIndex(action.index);
+              }}
+            />
+          </div>
+        ))}
+        <Button
+          variant={"link"}
           onClick={() => {
             setSelectedAction((a) => [
               ...a,
               {
+                index: a.length + 2,
                 availableTaskId: "",
                 availableTaskName: "",
               },
             ]);
           }}
-              ><div className="text-2xl">
-                      
-          +
-        </div>
+        >
+          <div className="text-2xl">+</div>
         </Button>
+      </div>
+      {selectedModelIndex && (
+        <Model
+          onSelect={(props: null | { name: string; id: string }) => {
+            if (props === null) {
+              setSelectedModelIndex(null);
+              return;
+            }
+            if (selectedModelIndex === 1) {
+              setSelectedTrigger({
+                id: props.id,
+                name: props.name,
+              });
+            } else {
+              setSelectedAction((a) => {
+                let newActions = [...a];
+                newActions[selectedModelIndex - 1] = {
+                  index: selectedModelIndex,
+                  availableTaskId: props.id,
+                  availableTaskName: props.name,
+                };
+                return newActions;
+              });
+            }
+          }}
+          index={selectedModelIndex}
+        />
+      )}
+    </>
+  );
+}
+
+function Model({
+  index,
+  onSelect,
+}: {
+  index: number;
+  onSelect: (props: null | { name: string; id: string }) => void;
+}) {
+  return (
+    <>
+      {/* <!-- Modal toggle --> */}
+      <button
+        data-modal-target="static-modal"
+        data-modal-toggle="static-modal"
+        className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        type="button"
+      >
+        Toggle modal
+      </button>
+
+      {/* <!-- Main modal --> */}
+      <div
+        id="static-modal"
+        data-modal-backdrop="static"
+        aria-hidden="true"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      >
+        <div className="relative p-4 w-full max-w-2xl max-h-full">
+          {/* <!-- Modal content --> */}
+          <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+            {/* <!-- Modal header --> */}
+            <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                {(index ===1)?"Trigger":"Actions"}
+              </h3>
+              <button
+                onClick={() => {
+                  onSelect(null);
+                }}
+                type="button"
+                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                data-modal-hide="static-modal"
+              >
+                <svg
+                  className="w-3 h-3"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 14 14"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                  />
+                </svg>
+                <span className="sr-only">Close modal</span>
+              </button>
+            </div>
+            {/* <!-- Modal body --> */}
+           ;idoflgksj;.df
+            {/* <!-- Modal footer --> */}
+           
+        </div>
+        </div>
       </div>
     </>
   );
