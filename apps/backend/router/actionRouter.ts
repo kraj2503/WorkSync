@@ -7,11 +7,11 @@ const client = new PrismaClient();
 
 router.get("/available", async (req, res) => {
  
-    const actions = await client.availableTrigger.findMany({})
+    const actions = await client.availableAction.findMany({})
 
-    res.json({
+    res.json(
         actions
-    })
+    )
 });
 
 export const actionRouter = router

@@ -1,10 +1,33 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Appbar from "../components/Appbar";
 import { TaskCell } from "../components/taskCell";
 import { Button } from "@/components/ui/button";
+import { BACKEND_URL } from "@repo/config";
+import axios from "axios";
+
+function useAvailableActionsandTriggers() {
+  const [availableTrigger, setAvailableTrigger] = useState([]);
+  const [availableActions, setAvailableActions] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`${BACKEND_URL}/api/v1/trigger/available`)
+      .then((x) => setAvailableTrigger(x.data));
+    axios
+      .get(`${BACKEND_URL}/api/v1/action/available`)
+      .then((x) => setAvailableActions(x.data));
+  }, []);
+
+  return {
+    availableActions,
+    availableTrigger,
+  };
+}
 
 export default function TaskFlow() {
+  const { availableActions, availableTrigger } =
+    useAvailableActionsandTriggers();
   const [selectedTrigger, setSelectedTrigger] = useState<{
     id: string;
     name: string;
@@ -90,6 +113,9 @@ export default function TaskFlow() {
             }
           }}
           index={selectedModelIndex}
+          availableItems={
+            selectedModelIndex === 1 ? availableTrigger : availableActions
+          }
         />
       )}
     </>
@@ -99,9 +125,15 @@ export default function TaskFlow() {
 function Model({
   index,
   onSelect,
+  availableItems,
 }: {
   index: number;
   onSelect: (props: null | { name: string; id: string }) => void;
+  availableItems: {
+    id: string;
+    name: string;
+    image: string;
+  }[];
 }) {
   return (
     <>
@@ -128,7 +160,7 @@ function Model({
             {/* <!-- Modal header --> */}
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                {(index ===1)?"Trigger":"Actions"}
+                {index === 1 ? "Trigger" : "Actions"}
               </h3>
               <button
                 onClick={() => {
@@ -156,11 +188,15 @@ function Model({
                 <span className="sr-only">Close modal</span>
               </button>
             </div>
-            {/* <!-- Modal body --> */}
-           ;idoflgksj;.df
-            {/* <!-- Modal footer --> */}
-           
-        </div>
+            {availableItems.map(({ id, name, image }) => {
+              return (
+                <div className="flex border">
+                  <img src={image} width={30} />
+                  <div id={id}>{name}</div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </>
