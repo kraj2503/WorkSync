@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { BACKEND_URL } from "@repo/config";
 import axios from "axios";
 import { supabase } from "@repo/supabaseclient";
+import { useRouter } from "next/navigation";
 
 function useAvailableActionsandTriggers() {
   const [availableTrigger, setAvailableTrigger] = useState([]);
@@ -47,6 +48,7 @@ export default function TaskFlow() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
+  const Router = useRouter()
   useEffect(() => {
     const getSession = async () => {
       const { data, error } = await supabase.auth.getSession();
@@ -87,7 +89,8 @@ export default function TaskFlow() {
           "x-user-id": userId,
         },
       });
-      console.log("Task created:", res.data);
+      alert("Task created");
+      Router.push("/dashboard")
     } catch (err) {
       console.log("data sent", payload);
       console.error("Error creating task:", err);

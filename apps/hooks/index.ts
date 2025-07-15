@@ -7,6 +7,8 @@ const client = new PrismaClient();
 
 app.use(express.json());
 app.post("/hooks/catch/:userId/:taskId", async (req, res) => {
+  console.log("catch hook");
+  
   const userId = req.params.userId;
   const taskId = req.params.taskId;
   const body = req.body;
