@@ -5,6 +5,7 @@ import { TaskCell } from "../components/taskCell";
 import { Button } from "@/components/ui/button";
 import { BACKEND_URL } from "@repo/config";
 import axios from "axios";
+import { supabase } from "@repo/supabaseclient";
 
 function useAvailableActionsandTriggers() {
   const [availableTrigger, setAvailableTrigger] = useState([]);
@@ -43,10 +44,78 @@ export default function TaskFlow() {
   const [selectedModelIndex, setSelectedModelIndex] = useState<number | null>(
     null
   );
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error || !data.session) {
+        console.error("Failed to fetch Supabase session", error);
+        return;
+      }
+      setAccessToken(data.session.access_token);
+      setUserId(data.session.user.id);
+    };
+
+    getSession();
+  }, []);
+
+  const handleCreateFlow = async () => {
+    if (!accessToken || !userId || !selectedTrigger) {
+      console.error("Missing session or trigger data");
+      return;
+    }
+    console.log(userId);
+
+    const payload = {
+      trigger: {
+        availableTriggerId: selectedTrigger.id,
+        triggerMetadata: {},
+      },
+      actions: selectedAction.map((action) => ({
+        availableActionId: action.availableTaskId,
+        order: action.index,
+        actionMetadata: {},
+      })),
+    };
+
+    try {
+      const res = await axios.post(`${BACKEND_URL}/api/v1/task/add`, payload, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "x-user-id": userId,
+        },
+      });
+      console.log("Task created:", res.data);
+    } catch (err) {
+      console.log("data sent", payload);
+      console.error("Error creating task:", err);
+    }
+  };
+
+  const payload = {
+    trigger: {
+      availableTriggerId: selectedTrigger?.id || "",
+      triggerMetadata: {},
+    },
+    actions: selectedAction.map((action) => ({
+      availableActionId: action.availableTaskId,
+      order: action.index,
+      actionMetadata: {},
+    })),
+  };
 
   return (
     <>
       {/* <Appbar /> */}
+
+      <div
+        className="cursor-pointer bg-red-300 rounded flex justify-end "
+        onClick={handleCreateFlow}
+      >
+        Publish
+      </div>
       <div className="flex justify-center flex-col min-h-screen">
         <div className="flex justify-center w-full">
           <TaskCell
@@ -145,16 +214,13 @@ function Model({
     <>
       {/* <!-- Modal toggle --> */}
       <button
-
         className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         type="button"
       >
         Toggle modal
       </button>
 
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-      >
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
         <div className="relative p-4 w-full max-w-2xl max-h-full">
           {/* <!-- Modal content --> */}
           <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
@@ -190,7 +256,7 @@ function Model({
             </div>
             {availableItems.map(({ id, name, image }) => {
               return (
-                <div 
+                <div
                   key={id}
                   onClick={() => {
                     onSelect({

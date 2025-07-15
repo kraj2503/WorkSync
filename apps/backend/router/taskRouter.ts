@@ -7,7 +7,7 @@ const router = Router();
 const client = new PrismaClient();
 
 
-router.post("/add", authMiddleware, async (req: AuthRequest, res) => {
+router.post("/add", async (req, res) => {
   const body = req.body;
   
   const parsedData = TaskCreateSchema.safeParse(body);
@@ -16,11 +16,11 @@ router.post("/add", authMiddleware, async (req: AuthRequest, res) => {
     return res.status(411).json({
       message: "Invalid body",
     });
-console.log(req.userId);
+const userId = req.headers["x-user-id"];
 
   const task = await client.task.create({
     data: {
-      userId: req.userId??1,
+      userId: userId,
       trigger: {
         create: {
           triggerId: parsedData.data.trigger.availableTriggerId,
@@ -35,7 +35,7 @@ console.log(req.userId);
     },
   });
   return res.json({
-    task,
+    task
   });
 });
 
