@@ -109,12 +109,12 @@ function Tasks({ tasks, userId }: { tasks: any[],userId:string }) {
             // onClick={() => router.push(`/task/${t.id}`)}
           >
             <TableCell className="font-medium">{idx + 1}</TableCell>
-            <TableCell>{t.trigger?.type?.name || "N/A"}</TableCell>
+            <TableCell>{<img src={t.trigger?.type?.image}  width={40}/> }</TableCell>
             <TableCell>
               {t.action?.length > 0 ? (
-                <ul className="space-y-1">
+                <ul className="space-y-1 flex ">
                   {t.action.map((a: any) => (
-                    <li key={a.id}>{a.action?.name ?? "Unknown Action"}</li>
+                    <li key={a.id}>{<img src={a.action?.image} width={30} />}</li>
                   ))}
                 </ul>
               ) : (
