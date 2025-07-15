@@ -58,20 +58,22 @@ export default function TaskFlow() {
           />
         </div>
 
-        {selectedAction.map((action) => (
-          <div
-            key={action.availableTaskId}
-            className="flex justify-center w-full mt-5"
-          >
-            <TaskCell
-              name={action.availableTaskName || "Action"}
-              index={action.index}
-              onClick={() => {
-                setSelectedModelIndex(action.index);
-              }}
-            />
-          </div>
-        ))}
+        {selectedAction.map((action) => {
+          return (
+            <div
+              key={`action-${action.index}`}
+              className="flex justify-center w-full mt-5"
+            >
+              <TaskCell
+                name={action.availableTaskName || "Action"}
+                index={action.index}
+                onClick={() => {
+                  setSelectedModelIndex(action.index);
+                }}
+              />
+            </div>
+          );
+        })}
         <Button
           variant={"link"}
           onClick={() => {
@@ -101,16 +103,20 @@ export default function TaskFlow() {
                 name: props.name,
               });
             } else {
-              setSelectedAction((a) => {
-                let newActions = [...a];
-                newActions[selectedModelIndex - 1] = {
-                  index: selectedModelIndex,
-                  availableTaskId: props.id,
-                  availableTaskName: props.name,
-                };
-                return newActions;
-              });
+              setSelectedAction((prevActions) =>
+                prevActions.map((action) =>
+                  action.index === selectedModelIndex
+                    ? {
+                        ...action,
+                        availableTaskId: props.id,
+                        availableTaskName: props.name,
+                      }
+                    : action
+                )
+              );
             }
+
+            setSelectedModelIndex(null); // Close the modal
           }}
           index={selectedModelIndex}
           availableItems={
@@ -139,19 +145,14 @@ function Model({
     <>
       {/* <!-- Modal toggle --> */}
       <button
-        data-modal-target="static-modal"
-        data-modal-toggle="static-modal"
+
         className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         type="button"
       >
         Toggle modal
       </button>
 
-      {/* <!-- Main modal --> */}
       <div
-        id="static-modal"
-        data-modal-backdrop="static"
-        aria-hidden="true"
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
       >
         <div className="relative p-4 w-full max-w-2xl max-h-full">
@@ -172,7 +173,6 @@ function Model({
               >
                 <svg
                   className="w-3 h-3"
-                  aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 14 14"
@@ -190,7 +190,16 @@ function Model({
             </div>
             {availableItems.map(({ id, name, image }) => {
               return (
-                <div className="flex border">
+                <div 
+                  key={id}
+                  onClick={() => {
+                    onSelect({
+                      id,
+                      name,
+                    });
+                  }}
+                  className="flex border cursor-pointer hover:bg-slate-200 p-5 rounded-xl"
+                >
                   <img src={image} width={30} />
                   <div id={id}>{name}</div>
                 </div>

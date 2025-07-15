@@ -6,7 +6,8 @@ export const TaskCell = ({
   name?: string;
   index: number;
   onClick: () => void;
-}) => {
+  }) => {
+  
   return (
     <div className="flex" onClick={onClick}>
       <div className="border border-black py-5 px-4 flex w-[300px] justify-center cursor-pointer">
