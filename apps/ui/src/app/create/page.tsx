@@ -7,6 +7,7 @@ import { BACKEND_URL } from "@repo/config";
 import axios from "axios";
 import { supabase } from "@repo/supabaseclient";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 function useAvailableActionsandTriggers() {
   const [availableTrigger, setAvailableTrigger] = useState([]);
@@ -48,7 +49,7 @@ export default function TaskFlow() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const Router = useRouter()
+  const Router = useRouter();
   useEffect(() => {
     const getSession = async () => {
       const { data, error } = await supabase.auth.getSession();
@@ -68,7 +69,6 @@ export default function TaskFlow() {
       console.error("Missing session or trigger data");
       return;
     }
-    console.log(userId);
 
     const payload = {
       trigger: {
@@ -90,23 +90,11 @@ export default function TaskFlow() {
         },
       });
       alert("Task created");
-      Router.push("/dashboard")
+      Router.push("/dashboard");
     } catch (err) {
       console.log("data sent", payload);
       console.error("Error creating task:", err);
     }
-  };
-
-  const payload = {
-    trigger: {
-      availableTriggerId: selectedTrigger?.id || "",
-      triggerMetadata: {},
-    },
-    actions: selectedAction.map((action) => ({
-      availableActionId: action.availableTaskId,
-      order: action.index,
-      actionMetadata: {},
-    })),
   };
 
   return (
@@ -213,70 +201,184 @@ function Model({
     image: string;
   }[];
 }) {
-  return (
-    <>
-      {/* <!-- Modal toggle --> */}
-      <button
-        className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        type="button"
-      >
-        Toggle modal
-      </button>
+  const [step, setStep] = useState(0);
+  const [selectedAction, setSelectedAction] = useState<{
+    id?: string;
+    name?: string;
+  }>({});
+  const isTrigger = index === 1;
 
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-        <div className="relative p-4 w-full max-w-2xl max-h-full">
-          {/* <!-- Modal content --> */}
-          <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-            {/* <!-- Modal header --> */}
-            <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                {index === 1 ? "Trigger" : "Actions"}
-              </h3>
-              <button
-                onClick={() => {
-                  onSelect(null);
-                }}
-                type="button"
-                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                data-modal-hide="static-modal"
+  // Reset step when modal closes
+  const handleClose = () => {
+    setStep(0);
+    setSelectedAction({});
+    onSelect(null);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="relative p-4 w-full max-w-2xl max-h-full">
+        {/* Modal content */}
+        <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+          {/* Modal header */}
+          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+              {index === 1 ? "Trigger" : "Actions"}
+            </h3>
+            <button
+              onClick={handleClose}
+              type="button"
+              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+              data-modal-hide="static-modal"
+            >
+              <svg
+                className="w-3 h-3"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 14 14"
               >
-                <svg
-                  className="w-3 h-3"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 14 14"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                  />
-                </svg>
-                <span className="sr-only">Close modal</span>
-              </button>
-            </div>
-            {availableItems.map(({ id, name, image }) => {
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                />
+              </svg>
+              <span className="sr-only">Close modal</span>
+            </button>
+          </div>
+
+          {/* Conditional rendering based on step and selected action */}
+          {step === 1 && selectedAction.name === "Send Email" && (
+            <EmailSelector
+              setMetadata={(metadata) => {
+                onSelect({
+                  ...selectedAction,
+                  metadata,
+                } as { name: string; id: string });
+              }}
+            />
+          )}
+
+          {step === 1 && selectedAction.name === "solana" && (
+            <SolanaSelector
+              setMetadata={(metadata) => {
+                onSelect({
+                  ...selectedAction,
+                  metadata,
+                } as { name: string; id: string });
+              }}
+            />
+          )}
+
+          {step === 0 &&
+            availableItems.map(({ id, name, image }) => {
               return (
                 <div
                   key={id}
                   onClick={() => {
-                    onSelect({
-                      id,
-                      name,
-                    });
+                    if (isTrigger) {
+                      console.log("trigger is clicked");
+                      onSelect({
+                        id,
+                        name,
+                      });
+                    } else {
+                      setStep(1);
+                      setSelectedAction({
+                        id,
+                        name,
+                      });
+                    }
                   }}
                   className="flex border cursor-pointer hover:bg-slate-200 p-5 rounded-xl"
                 >
-                  <img src={image} width={30} />
+                  <img src={image} width={30} alt={name} />
                   <div id={id}>{name}</div>
                 </div>
               );
             })}
-          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
+
+const EmailSelector = ({
+  setMetadata,
+}: {
+  setMetadata: (params: any) => void;
+}) => {
+  const [email, setEmail] = useState("");
+  const [body, setBody] = useState("");
+
+  return (
+    <div className="p-4">
+      <Input
+        type="text"
+        placeholder="To"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="mb-3"
+      />
+      <Input
+        type="text"
+        placeholder="Body"
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+        className="mb-3"
+      />
+
+      <Button
+        onClick={() => {
+          setMetadata({
+            email,
+            body,
+          });
+        }}
+      >
+        Submit
+      </Button>
+    </div>
+  );
+};
+
+const SolanaSelector = ({
+  setMetadata,
+}: {
+  setMetadata: (params: any) => void;
+}) => {
+  const [address, setAddress] = useState("");
+  const [amount, setAmount] = useState("");
+
+  return (
+    <div className="p-4">
+      <Input
+        type="text"
+        placeholder="Wallet Address"
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+        className="mb-3"
+      />
+      <Input
+        type="number"
+        placeholder="Amount (SOL)"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        className="mb-3"
+      />
+
+      <Button
+        onClick={() => {
+          setMetadata({
+            address,
+            amount,
+          });
+        }}
+      >
+        Submit
+      </Button>
+    </div>
+  );
+};
