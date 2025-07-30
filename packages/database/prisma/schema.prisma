@@ -35,6 +35,7 @@ model Trigger {
   triggerId String
   task      Task             @relation(fields: [taskId], references: [id], onDelete: Cascade)
   type      AvailableTrigger @relation(fields: [triggerId], references: [id])
+  metadata  Json             @default("{}")
 
   @@map("Trigger")
 }
@@ -46,6 +47,7 @@ model Action {
   sortingOrder Int             @default(0)
   action       AvailableAction @relation(fields: [actionId], references: [id])
   task         Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  metadata     Json            @default("{}")
 
   @@map("Action")
 }
@@ -60,7 +62,7 @@ model AvailableAction {
 }
 
 model AvailableTrigger {
-  id    String @id @default(uuid())
+  id    String  @id @default(uuid())
   name  String
   image String?
 

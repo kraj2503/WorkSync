@@ -39,7 +39,8 @@ export default function TaskFlow() {
     {
       index: number;
       availableTaskId: string;
-      availableTaskName: string;
+    availableTaskName: string;
+      metadata:any
     }[]
   >([]);
 
@@ -78,7 +79,7 @@ export default function TaskFlow() {
       actions: selectedAction.map((action) => ({
         availableActionId: action.availableTaskId,
         order: action.index,
-        actionMetadata: {},
+        actionMetadata: action.metadata,
       })),
     };
 
@@ -143,6 +144,7 @@ export default function TaskFlow() {
                 index: a.length + 2,
                 availableTaskId: "",
                 availableTaskName: "",
+                metadata: {}
               },
             ]);
           }}
@@ -152,7 +154,7 @@ export default function TaskFlow() {
       </div>
       {selectedModelIndex && (
         <Model
-          onSelect={(props: null | { name: string; id: string }) => {
+          onSelect={(props: null | { name: string; id: string,metadata:any}) => {
             if (props === null) {
               setSelectedModelIndex(null);
               return;
@@ -169,7 +171,8 @@ export default function TaskFlow() {
                     ? {
                         ...action,
                         availableTaskId: props.id,
-                        availableTaskName: props.name,
+                      availableTaskName: props.name,
+                        metadata:props.metadata
                       }
                     : action
                 )
@@ -194,7 +197,7 @@ function Model({
   availableItems,
 }: {
   index: number;
-  onSelect: (props: null | { name: string; id: string }) => void;
+  onSelect: (props: null | { name: string; id: string ,metadata:any}) => void;
   availableItems: {
     id: string;
     name: string;
@@ -256,7 +259,7 @@ function Model({
                 onSelect({
                   ...selectedAction,
                   metadata,
-                } as { name: string; id: string });
+                } as { name: string; id: string,metadata:any });
               }}
             />
           )}
@@ -267,7 +270,7 @@ function Model({
                 onSelect({
                   ...selectedAction,
                   metadata,
-                } as { name: string; id: string });
+                } as { name: string; id: string,metadata:any });
               }}
             />
           )}
@@ -279,10 +282,10 @@ function Model({
                   key={id}
                   onClick={() => {
                     if (isTrigger) {
-                      console.log("trigger is clicked");
                       onSelect({
                         id,
                         name,
+                        metadata:{}
                       });
                     } else {
                       setStep(1);
