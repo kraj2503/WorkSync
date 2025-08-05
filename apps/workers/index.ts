@@ -11,6 +11,9 @@ const prismaClient = new PrismaClient();
 async function main() {
   const consumer = kafka.consumer({ groupId: "main-worker" });
   await consumer.connect();
+  const producer = kafka.producer();
+  await producer.connect();
+
   await consumer.subscribe({ topic: TOPIC_NAME });
 
   await consumer.run({
@@ -39,34 +42,44 @@ async function main() {
             include: {
               action: {
                 include: {
-                  action:true
-                }
+                  action: true,
+                },
               },
             },
           },
         },
       });
 
+      const currentStage = taskRundetails?.task.action.find(
+        (x) => x.sortingOrder === stage
+      );
 
-      const currentStage = taskRundetails?.task.action.find(x => x.sortingOrder === stage)
-      
       if (!currentStage) {
         console.log(`"Current action not found`);
-        
       }
+console.log(currentStage?.action.id);
 
       if (currentStage?.action.id === "email") {
         console.log("Sending out email");
-        
       }
 
       if (currentStage?.action.id === "solana") {
         console.log("Sending out solana");
-        
       }
-        
-        
-        
+      const lastStage = (taskRundetails?.task.action.length || 1) - 1;
+      if (lastStage !== stage) {
+        await producer.send({
+          topic: TOPIC_NAME,
+          messages: [
+            {
+              value: JSON.stringify({
+                stage: stage + 1,
+                taskRunId,
+              }),
+            },
+          ],
+        });
+      }
       await new Promise((r) => setTimeout(r, 500));
 
       console.log(`Processing done`);
