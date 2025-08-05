@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "kafkajs": "^2.2.4",
-     "@repo/config": "*"
+    "@repo/config": "*",
+    "@repo/db": "*"
   }
 }

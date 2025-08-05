@@ -1,9 +1,12 @@
 import { Kafka } from "kafkajs";
 import { TOPIC_NAME } from "@repo/config";
+import { PrismaClient } from "@prisma/client";
+
 const kafka = new Kafka({
   clientId: "taskOutboxReader",
   brokers: ["localhost:9092"],
 });
+const prismaClient = new PrismaClient();
 
 async function main() {
   const consumer = kafka.consumer({ groupId: "main-worker" });
@@ -18,7 +21,53 @@ async function main() {
         offset: message.offset,
         value: message.value?.toString(),
       });
-      await new Promise((r) => setTimeout(r, 3000));
+      if (!message.value?.toString()) {
+        return;
+      }
+
+      const parsedValue = JSON.parse(message.value?.toString());
+
+      const taskRunId = parsedValue.taskRunId;
+      const stage = parsedValue.stage;
+
+      const taskRundetails = await prismaClient.taskRun.findFirst({
+        where: {
+          id: taskRunId,
+        },
+        include: {
+          task: {
+            include: {
+              action: {
+                include: {
+                  action:true
+                }
+              },
+            },
+          },
+        },
+      });
+
+
+      const currentStage = taskRundetails?.task.action.find(x => x.sortingOrder === stage)
+      
+      if (!currentStage) {
+        console.log(`"Current action not found`);
+        
+      }
+
+      if (currentStage?.action.id === "email") {
+        console.log("Sending out email");
+        
+      }
+
+      if (currentStage?.action.id === "solana") {
+        console.log("Sending out solana");
+        
+      }
+        
+        
+        
+      await new Promise((r) => setTimeout(r, 500));
 
       console.log(`Processing done`);
 

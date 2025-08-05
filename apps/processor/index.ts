@@ -22,10 +22,13 @@ async function main() {
         topicMessages: [
           {
             topic: TOPIC_NAME,
-            messages: pendingRows.map((row) => ({
-              value: row.taskRunId,
-            })),
-          },
+            messages: pendingRows.map((row) => {
+              return {
+
+                value: JSON.stringify({ taskRunId: row.taskRunId, stage: 0})
+              }
+            }),
+          }, 
         ],
       });
       await client.taskRunOutbox.deleteMany({
@@ -35,7 +38,8 @@ async function main() {
           },
         },
       });
-    }
+  }
+  
   
 }
 
