@@ -1,6 +1,8 @@
 import { Kafka } from "kafkajs";
 import { TOPIC_NAME } from "@repo/config";
 import { PrismaClient } from "@prisma/client";
+import type { JsonObject } from "@prisma/client/runtime/library";
+import { Parse } from "./parser";
 
 const kafka = new Kafka({
   clientId: "taskOutboxReader",
@@ -57,15 +59,46 @@ async function main() {
       if (!currentStage) {
         console.log(`"Current action not found`);
       }
-console.log(currentStage?.action.id);
+      console.log(currentStage);
 
       if (currentStage?.action.id === "email") {
-        console.log("Sending out email");
+        const taskMetadata = taskRundetails?.metadata;
+        console.log(`taskMetadata`,taskMetadata);
+        console.log(`currentStage.metadata `, currentStage.metadata);
+        
+        const body = Parse(
+          (currentStage.metadata as JsonObject)?.body as string,
+          taskMetadata
+        );
+        const to = Parse(
+          (currentStage.metadata as JsonObject)?.email as string,
+          taskMetadata
+        );
+
+        console.log(`Sending out email to ${to} , body is ${body}`);
       }
 
       if (currentStage?.action.id === "solana") {
-        console.log("Sending out solana");
+        const taskMetadata = taskRundetails?.metadata;
+        console.log(`taskMetadata`,taskMetadata);
+        console.log(`currentStage.metadata `, currentStage.metadata);
+        
+        const amount = Parse(
+            (currentStage.metadata as JsonObject)?.amount as string,
+            taskMetadata
+          );
+          const address = Parse(
+            (currentStage.metadata as JsonObject)?.address as string,
+            taskMetadata
+          );
+        
+        
+        console.log(`Sending out solana to ${address}, amount ${amount}`);
       }
+
+
+
+
       const lastStage = (taskRundetails?.task.action.length || 1) - 1;
       if (lastStage !== stage) {
         await producer.send({
