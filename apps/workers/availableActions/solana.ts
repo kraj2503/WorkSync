@@ -1,0 +1,1 @@
+export function sendSolana(address: string, amount: string) {}

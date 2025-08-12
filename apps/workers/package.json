@@ -16,8 +16,10 @@
     "check-types": "bunx tsc --noEmit"
   },
   "dependencies": {
-    "kafkajs": "^2.2.4",
     "@repo/config": "*",
-    "@repo/db": "*"
+    "@repo/db": "*",
+    "@types/nodemailer": "^6.4.17",
+    "kafkajs": "^2.2.4",
+    "nodemailer": "^7.0.5"
   }
 }
