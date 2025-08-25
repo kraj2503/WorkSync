@@ -13,12 +13,13 @@ import { Label } from "@/components/ui/label";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@repo/supabaseclient";
-import { Loader2, Mail } from "lucide-react"; // icons
+import { Loader2, UserPlus, Mail } from "lucide-react";
 
-export default function Login() {
+export default function SignUp() {
   const router = useRouter();
   const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -30,50 +31,66 @@ export default function Login() {
       setError("Email and password are required.");
       return;
     }
+    if (passwordValue !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email: emailValue,
       password: passwordValue,
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/welcome`,
+      },
     });
 
     if (error) {
       setError(error.message);
-    } else {
-      router.push("/dashboard");
+    } else if (data.user) {
+      router.push("/check-email"); // Create a "Check your inbox" screen
     }
+
     setLoading(false);
   };
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
 
   return (
     <div className="bg-gradient-to-br from-purple-50 via-amber-50 to-orange-50 min-h-screen flex items-center justify-around px-6">
       <div className="grid grid-cols-1 md:grid-cols-2 max-w-6xl w-full gap-12 items-center">
-        {/* Left Side */}
+        {/* Left Section */}
         <div className="space-y-6 px-4">
           <h1 className="text-5xl font-extrabold leading-tight text-gray-900">
-            Automate smarter with{" "}
+            Join{" "}
             <span className="bg-gradient-to-r from-purple-500 via-orange-400 to-purple-500 bg-clip-text text-transparent">
               WorkSync
             </span>
           </h1>
           <p className="text-gray-600 text-lg">
-            Connect your apps, orchestrate AI, and scale workflows without code.
+            Create your free account and start building AI-powered workflows in
+            minutes.
           </p>
           <ul className="list-disc ml-6 text-gray-700 space-y-1">
             <li>Integrate 8,000+ apps and 300+ AI tools</li>
-            <li>Build workflows in minutes, not weeks</li>
-            <li>Enjoy a 14-day free trial of premium features</li>
+            <li>No coding required, just connect and go</li>
+            <li>14-day trial of all premium features</li>
           </ul>
         </div>
 
-        {/* Right Side: Login Card */}
+        {/* Right Section: Sign Up Card */}
         <Card className="w-full max-w-md shadow-xl border border-gray-200 hover:shadow-2xl transition rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-2xl font-semibold">
-              Welcome back
+            <CardTitle className="text-2xl font-semibold flex items-center gap-2">
+              <UserPlus className="w-5 h-5" /> Create an account
             </CardTitle>
             <CardDescription>
-              Login to your account to access your workspace
+              Enter your details to get started.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -84,9 +101,8 @@ export default function Login() {
                   id="email"
                   type="email"
                   placeholder="you@example.com"
-                  value={emailValue}
-                  onChange={(e) => setEmailValue(e.target.value)}
                   required
+                  onChange={(e) => setEmailValue(e.target.value)}
                 />
               </div>
               <div>
@@ -94,13 +110,20 @@ export default function Login() {
                 <Input
                   id="password"
                   type="password"
-                  value={passwordValue}
-                  onChange={(e) => setPasswordValue(e.target.value)}
                   required
+                  onChange={(e) => setPasswordValue(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  required
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
 
-              {/* Inline Error */}
               {error && (
                 <p className="text-sm text-red-600 font-medium">{error}</p>
               )}
@@ -114,7 +137,7 @@ export default function Login() {
                   {loading ? (
                     <Loader2 className="animate-spin w-5 h-5" />
                   ) : (
-                    "Login"
+                    "Sign Up"
                   )}
                 </Button>
 
@@ -123,16 +146,16 @@ export default function Login() {
                   className="w-full cursor-pointer flex items-center gap-2"
                 >
                   <Mail size={18} />
-                  Login with Google
+                  Continue with Google
                 </Button>
 
                 <p className="text-sm text-gray-500">
-                  Don&apos;t have an account?{" "}
+                  Already have an account?{" "}
                   <a
-                    href="signUp"
+                    href="login"
                     className="underline font-medium hover:text-orange-600"
                   >
-                    Sign up here
+                    Login here
                   </a>
                 </p>
               </CardFooter>
