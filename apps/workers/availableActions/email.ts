@@ -19,9 +19,9 @@ export async function sendEmail(to: string, body: string) {
   const mailOptions = {
     from: SENDER_EMAIL,
     to: to,
-    subject: "Test Email",
+    subject: "Test",
     text: body,
-    // html: '<p>You can also send <b>HTML</b> content!</p>', // Optional: for HTML emails
+   
   };
   try {
     await transporter.sendMail(mailOptions);

@@ -3,7 +3,6 @@ import { TOPIC_NAME } from "@repo/config";
 import { PrismaClient } from "@prisma/client";
 import type { JsonObject } from "@prisma/client/runtime/library";
 import { Parse } from "./parser";
-import { sendEmail } from "./availableActions/email";
 
 const kafka = new Kafka({
   clientId: "taskOutboxReader",
@@ -63,7 +62,7 @@ async function main() {
 
       if (currentStage?.action.id === "email") {
         const taskMetadata = taskRundetails?.metadata;
-
+        
         const body = Parse(
           (currentStage.metadata as JsonObject)?.body as string,
           taskMetadata
@@ -74,23 +73,31 @@ async function main() {
         );
 
         console.log(`Sending out email to ${to} , body is ${body}`);
-        await sendEmail(to, body);
+          await sendEmail(to, body);
       }
 
       if (currentStage?.action.id === "solana") {
         const taskMetadata = taskRundetails?.metadata;
-
+        
         const amount = Parse(
-          (currentStage.metadata as JsonObject)?.amount as string,
-          taskMetadata
-        );
-        const address = Parse(
-          (currentStage.metadata as JsonObject)?.address as string,
-          taskMetadata
-        );
-
+            (currentStage.metadata as JsonObject)?.amount as string,
+            taskMetadata
+          );
+          const address = Parse(
+            (currentStage.metadata as JsonObject)?.address as string,
+            taskMetadata
+          );
+        
+        
         console.log(`Sending out solana to ${address}, amount ${amount}`);
+          
+        await sendSolana(address,amount)
+      
+      
       }
+
+
+
 
       const lastStage = (taskRundetails?.task.action.length || 1) - 1;
       if (lastStage !== stage) {
