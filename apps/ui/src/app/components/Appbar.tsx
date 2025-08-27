@@ -44,7 +44,7 @@ export default function Appbar() {
   };
 
   return (
-    <div className="w-full bg-gradient-to-r from-indigo-500 via-orange-400 to-indigo-500 shadow-md">
+    <div className="w-full bg-gradient-to-r from-indigo-600 via-orange-400 to-indigo-600 shadow-md">
       <div className="flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
         {/* Logo */}
         <div
@@ -69,7 +69,7 @@ export default function Appbar() {
                 Login
               </Button>
               <Button
-                onClick={() => router.push("/auth/signIn")}
+                onClick={() => router.push("/auth/signUp")}
                 className={`${
                   isSignUp
                     ? "bg-white text-orange-600 font-semibold"

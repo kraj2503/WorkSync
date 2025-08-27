@@ -2,15 +2,22 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Zap, Workflow, Plug, ArrowRight } from "lucide-react";
+import { Zap, Workflow, Plug, ArrowRight, CloudCog } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return <LandingPage/>
+  return <LandingPage />;
 }
 
 function LandingPage() {
+  const router = useRouter();
+
+  const ToSignUp = () => {
+    router.push("/auth/signUp");
+  };
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 text-gray-900">
+    <main className="min-h-screen bg-gradient-to-b from-indigo-800 via-orange-800 to-indigo-500 text-gray-900">
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center text-center px-6 py-24">
         <motion.h1
@@ -21,12 +28,15 @@ function LandingPage() {
         >
           Automate Your Workflows Effortlessly
         </motion.h1>
-        <p className="mt-6 max-w-2xl text-lg text-gray-600">
+        <p className="mt-6 max-w-2xl text-lg text-gray-200">
           Connect apps, trigger workflows, and save time with powerful webhooks
           and integrations. Build automations that just work — no coding needed.
         </p>
         <div className="mt-8 flex gap-4">
-          <Button className="rounded-2xl px-6 py-3 bg-gradient-to-r from-purple-500 via-orange-400 to-purple-500 text-white shadow-lg hover:opacity-90 transition">
+          <Button
+            className="rounded-2xl px-6 py-3 bg-gradient-to-r from-purple-500 via-orange-400 to-purple-500 text-white shadow-lg hover:opacity-90 transition"
+            onClick={ToSignUp}
+          >
             Get Started
           </Button>
           <Button variant="outline" className="rounded-2xl px-6 py-3">
@@ -60,7 +70,7 @@ function LandingPage() {
           ].map((f, i) => (
             <Card
               key={i}
-              className="shadow-md rounded-2xl border border-gray-200 hover:shadow-lg transition"
+              className="shadow-md rounded-2xl border border-gray-200 hover:shadow-lg transition hover:scale-105 duration-300 "
             >
               <CardContent className="p-6 text-center">
                 <div className="mb-4 flex justify-center">{f.icon}</div>
@@ -73,7 +83,7 @@ function LandingPage() {
       </section>
 
       {/* Integrations Showcase */}
-      <section className="px-6 py-20 bg-gray-50">
+      <div className="px-6 py-20 ">
         <h2 className="text-3xl font-semibold text-center mb-10">
           Connect Your Favorite Apps
         </h2>
@@ -81,13 +91,13 @@ function LandingPage() {
           {["Slack", "Notion", "Github", "Gmail", "Trello"].map((app) => (
             <div
               key={app}
-              className="px-6 py-3 bg-white rounded-xl shadow-sm border text-gray-700 font-medium hover:shadow-md transition"
+              className="px-6 py-3 bg-white rounded-xl shadow-sm border text-gray-700 font-medium hover:shadow-md transition hover:scale-115 duration-300"
             >
               {app}
             </div>
           ))}
         </div>
-      </section>
+      </div>
 
       {/* CTA Section */}
       <section className="px-6 py-20 text-center">
@@ -103,7 +113,10 @@ function LandingPage() {
               Save time, reduce manual work, and let automations handle the
               boring stuff for you.
             </p>
-            <Button className="rounded-2xl px-6 py-3 bg-gradient-to-r from-purple-500 via-orange-400 to-purple-500 text-white shadow-lg hover:opacity-90 transition flex items-center gap-2">
+            <Button
+              className="rounded-2xl px-6 py-3 bg-gradient-to-r from-purple-700  to-orange-500 text-white shadow-lg hover:opacity-90 transition flex items-center gap-2"
+              onClick={ToSignUp}
+            >
               Get Started Free <ArrowRight size={18} />
             </Button>
           </div>
