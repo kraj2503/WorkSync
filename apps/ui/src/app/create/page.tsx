@@ -1,13 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import Appbar from "../components/Appbar";
-import { TaskCell } from "../components/taskCell";
+import Appbar from "../../components/Appbar";
+import { TaskCell } from "../../components/taskCell";
 import { Button } from "@/components/ui/button";
 import { BACKEND_URL } from "@repo/config";
 import axios from "axios";
 import { supabase } from "@repo/supabaseclient";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "../providers/AuthProvider";
 
 function useAvailableActionsandTriggers() {
   const [availableTrigger, setAvailableTrigger] = useState([]);
@@ -39,31 +40,21 @@ export default function TaskFlow() {
     {
       index: number;
       availableTaskId: string;
-    availableTaskName: string;
-      metadata:any
+      availableTaskName: string;
+      metadata: any;
     }[]
   >([]);
 
   const [selectedModelIndex, setSelectedModelIndex] = useState<number | null>(
     null
   );
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  // const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
   const Router = useRouter();
-  useEffect(() => {
-    const getSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (error || !data.session) {
-        console.error("Failed to fetch Supabase session", error);
-        return;
-      }
-      setAccessToken(data.session.access_token);
-      setUserId(data.session.user.id);
-    };
 
-    getSession();
-  }, []);
+  const { user: data, session: accessToken } = useAuth();
+  console.log("data", accessToken);
 
   const handleCreateFlow = async () => {
     if (!accessToken || !userId || !selectedTrigger) {
@@ -100,8 +91,6 @@ export default function TaskFlow() {
 
   return (
     <>
-      {/* <Appbar /> */}
-
       <div
         className="cursor-pointer bg-red-300 rounded flex justify-end "
         onClick={handleCreateFlow}
@@ -144,7 +133,7 @@ export default function TaskFlow() {
                 index: a.length + 2,
                 availableTaskId: "",
                 availableTaskName: "",
-                metadata: {}
+                metadata: {},
               },
             ]);
           }}
@@ -154,7 +143,9 @@ export default function TaskFlow() {
       </div>
       {selectedModelIndex && (
         <Model
-          onSelect={(props: null | { name: string; id: string,metadata:any}) => {
+          onSelect={(
+            props: null | { name: string; id: string; metadata: any }
+          ) => {
             if (props === null) {
               setSelectedModelIndex(null);
               return;
@@ -171,8 +162,8 @@ export default function TaskFlow() {
                     ? {
                         ...action,
                         availableTaskId: props.id,
-                      availableTaskName: props.name,
-                        metadata:props.metadata
+                        availableTaskName: props.name,
+                        metadata: props.metadata,
                       }
                     : action
                 )
@@ -197,7 +188,7 @@ function Model({
   availableItems,
 }: {
   index: number;
-  onSelect: (props: null | { name: string; id: string ,metadata:any}) => void;
+  onSelect: (props: null | { name: string; id: string; metadata: any }) => void;
   availableItems: {
     id: string;
     name: string;
@@ -259,7 +250,7 @@ function Model({
                 onSelect({
                   ...selectedAction,
                   metadata,
-                } as { name: string; id: string,metadata:any });
+                } as { name: string; id: string; metadata: any });
               }}
             />
           )}
@@ -270,7 +261,7 @@ function Model({
                 onSelect({
                   ...selectedAction,
                   metadata,
-                } as { name: string; id: string,metadata:any });
+                } as { name: string; id: string; metadata: any });
               }}
             />
           )}
@@ -285,7 +276,7 @@ function Model({
                       onSelect({
                         id,
                         name,
-                        metadata:{}
+                        metadata: {},
                       });
                     } else {
                       setStep(1);

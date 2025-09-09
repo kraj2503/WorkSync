@@ -1,47 +1,33 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu } from "lucide-react";
+import { CloudCog, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@repo/supabaseclient";
+import { useAuth } from "@/app/providers/AuthProvider";
 
 export default function Appbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenu, setMobileMenu] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  // const [user, setUser] = useState<any>(null);
 
   const isLogin = pathname === "/auth/login";
   const isSignUp = pathname === "/auth/signIn";
 
-  // fetch user session
-  useEffect(() => {
-    const getSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-    };
 
-    getSession();
-
-    // subscribe to auth state changes
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user || null);
-      }
-    );
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
+  const { user, loading,setUser } = useAuth();
+  
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
     router.push("/");
   };
+
+  const gotoDashboard = async () => {
+    router.push("/dashboard")
+  }
 
   return (
     <div className="w-full bg-gradient-to-r from-indigo-600 via-orange-400 to-indigo-600 shadow-md">
@@ -54,7 +40,6 @@ export default function Appbar() {
           WorkSync
         </div>
 
-        {/* Desktop Nav */}
         <div className="hidden md:flex space-x-6">
           {!user ? (
             <>
@@ -81,6 +66,12 @@ export default function Appbar() {
             </>
           ) : (
             <div className="flex items-center gap-4 text-white">
+              <Button
+                onClick={gotoDashboard}
+                className="bg-white text-indigo-600 hover:bg-gray-100 rounded-xl px-5"
+              >
+                Dashboard
+              </Button>
               <span className="font-medium">
                 Hi, {user.user_metadata?.name || user.email}
               </span>
