@@ -48,13 +48,11 @@ export default function TaskFlow() {
   const [selectedModelIndex, setSelectedModelIndex] = useState<number | null>(
     null
   );
-  // const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
   const Router = useRouter();
 
   const { user: data, session: accessToken } = useAuth();
-  console.log("data", accessToken);
 
   const handleCreateFlow = async () => {
     if (!accessToken || !userId || !selectedTrigger) {
