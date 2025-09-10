@@ -20,7 +20,12 @@ import { supabase } from "@repo/supabaseclient";
 export default function Dashboard() {
   const router = useRouter();
   const [loading, tasks, error, userId] = useTasks();
+  console.log(tasks);
 
+  const openTask = (id: string) => {
+    
+    router.push(`/create/${id}`);
+  };
   return (
     <div className="pt-10 flex justify-center h-full bg-gradient-to-br from-purple-50 via-white to-orange-50 min-h-screen">
       <div className="max-w-screen-lg w-full bg-white shadow-lg rounded-2xl p-6">
@@ -44,7 +49,7 @@ export default function Dashboard() {
         {!loading && error && (
           <div className="text-red-500 text-center">{error.message}</div>
         )}
-        {!loading && !error && <Tasks tasks={tasks} userId={userId} />}
+        {!loading && !error && <Tasks tasks={tasks} userId={userId} openTask={openTask}/>}
       </div>
     </div>
   );
@@ -93,7 +98,7 @@ function useTasks(): [boolean, any[], Error | null, string] {
   return [loading, tasks, error, userId ?? ""];
 }
 
-function Tasks({ tasks, userId }: { tasks: any[]; userId: string }) {
+function Tasks({ tasks, userId, openTask }: { tasks: any[]; userId: string;  openTask:any}) {
   if (tasks.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500 border-2 border-dashed border-purple-300 rounded-xl">
@@ -173,7 +178,10 @@ function Tasks({ tasks, userId }: { tasks: any[]; userId: string }) {
               </Button>
             </TableCell>
             <TableCell className="text-right">
-              <Button className="bg-gradient-to-r from-purple-600 to-orange-500 text-white hover:opacity-90 rounded-lg">
+              <Button
+                className="bg-gradient-to-r from-purple-600 to-orange-500 text-white hover:opacity-90 rounded-lg"
+                onClick={()=>openTask(t.id)}
+              >
                 Go
               </Button>
             </TableCell>

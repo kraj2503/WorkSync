@@ -1,13 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import Appbar from "../../components/Appbar";
-import { TaskCell } from "../../components/taskCell";
 import { Button } from "@/components/ui/button";
 import { BACKEND_URL } from "@repo/config";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "../providers/AuthProvider";
+import { useAuth } from "@/app/providers/AuthProvider";
+import { TaskCell } from "@/components/taskCell";
 
 function useAvailableActionsandTriggers() {
   const [availableTrigger, setAvailableTrigger] = useState([]);
@@ -27,10 +26,74 @@ function useAvailableActionsandTriggers() {
     availableTrigger,
   };
 }
+function useActionsAndTriggers(id: string, accessToken?: string | null) {
+  const [trigger, setTrigger] = useState<{
+    id: string;
+    triggerId: string;
+    name: string;
+    metadata: any;
+  } | null>(null);
+  const [actions, setActions] = useState<
+    {
+      index: number;
+      availableTaskId: string;
+      availableTaskName: string;
+      metadata: any;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    if (!id || !accessToken) return;
+
+    axios
+      .get(`${BACKEND_URL}/api/v1/task/getTasks/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        const data = res.data.task[0];
+console.log(data);
+
+        if (data.trigger) {
+          console.log(data.trigger.id);
+          
+          setTrigger({
+            id: data.trigger.id,
+            triggerId: data.trigger.type.id,
+            name: data.trigger.type.name,
+            metadata: data.trigger.metadata || {},
+          });
+        }
+
+        if (Array.isArray(data.actions)) {
+          setActions(
+            data.actions.map((a: any, idx: number) => ({
+              index: idx + 2,
+              availableTaskId: a.availableActionId,
+              availableTaskName: a.name,
+              metadata: a.metadata || {},
+            }))
+          );
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching existing task flow:", err);
+      });
+  }, [id, accessToken]);
+  console.log(trigger);
+
+  return { trigger, actions };
+}
 
 export default function TaskFlow() {
+  const params = useParams<{ id: string }>();
+  const { user: data, session: accessToken } = useAuth();
+
   const { availableActions, availableTrigger } =
     useAvailableActionsandTriggers();
+  const { trigger, actions } = useActionsAndTriggers(params.id, accessToken);
+
   const [selectedTrigger, setSelectedTrigger] = useState<{
     id: string;
     name: string;
@@ -51,7 +114,14 @@ export default function TaskFlow() {
 
   const Router = useRouter();
 
-  const { user: data, session: accessToken } = useAuth();
+  useEffect(() => {
+    if (trigger) {
+      setSelectedTrigger({ id: trigger.id, name: trigger.name });
+    }
+    if (actions.length > 0) {
+      setSelectedAction(actions);
+    }
+  }, [trigger, actions]);
 
   const handleCreateFlow = async () => {
     if (!accessToken || !userId || !selectedTrigger) {
