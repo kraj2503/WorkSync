@@ -8,13 +8,15 @@ type AuthContextType = {
   user: any;
   loading: boolean;
   setUser: any;
-  session:string
+  session:string,
+  userId:string
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }): JSX.Element => {
   const [user, setUser] = useState<any>(null);
+  const [userId, setUserId] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [session, setSession ] = useState<string>("")
   
@@ -24,12 +26,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }): JSX.Element
         data: { session },
       } = await supabase.auth.getSession();
       setUser(session?.user || null);
+      setUserId(session?.user?.id || "");
       setSession(session?.access_token||"");
       setLoading(false);
       
     };
 
     getSession();
+
+
 
     const {
       data: { subscription },
@@ -43,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }): JSX.Element
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading,setUser,session }}>
+    <AuthContext.Provider value={{ user, loading, setUser, session, userId }}>
       {children}
     </AuthContext.Provider>
   );

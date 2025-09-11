@@ -53,7 +53,6 @@ function useActionsAndTriggers(id: string, accessToken?: string | null) {
       })
       .then((res) => {
         const data = res.data.task[0];
-console.log(data);
 
         if (data.trigger) {
           console.log(data.trigger.id);
@@ -65,30 +64,30 @@ console.log(data);
             metadata: data.trigger.metadata || {},
           });
         }
+        console.log(data.action);
 
-        if (Array.isArray(data.actions)) {
+        if (Array.isArray(data.action)) {
           setActions(
-            data.actions.map((a: any, idx: number) => ({
+            data.action.map((a: any, idx: number) => ({
               index: idx + 2,
-              availableTaskId: a.availableActionId,
-              availableTaskName: a.name,
+              availableTaskId: a.actionId,
+              availableTaskName: a.action.name,
               metadata: a.metadata || {},
-            }))
-          );
-        }
+            })))
+          }
       })
       .catch((err) => {
         console.error("Error fetching existing task flow:", err);
       });
   }, [id, accessToken]);
-  console.log(trigger);
+console.log(`actions`,actions);
 
   return { trigger, actions };
 }
 
 export default function TaskFlow() {
   const params = useParams<{ id: string }>();
-  const { user: data, session: accessToken } = useAuth();
+  const { user: data, session: accessToken, userId} = useAuth();
 
   const { availableActions, availableTrigger } =
     useAvailableActionsandTriggers();
@@ -110,7 +109,7 @@ export default function TaskFlow() {
   const [selectedModelIndex, setSelectedModelIndex] = useState<number | null>(
     null
   );
-  const [userId, setUserId] = useState<string | null>(null);
+
 
   const Router = useRouter();
 
@@ -124,8 +123,10 @@ export default function TaskFlow() {
   }, [trigger, actions]);
 
   const handleCreateFlow = async () => {
-    if (!accessToken || !userId || !selectedTrigger) {
-      console.error("Missing session or trigger data");
+    console.log(`Access token ${accessToken}, UserId: ${userId}  selectedTrigger: ${selectedTrigger}`);
+    
+    if (!accessToken  || !selectedTrigger) {
+      console.error("Missing accessToken or trigger data");
       return;
     }
 
@@ -142,7 +143,7 @@ export default function TaskFlow() {
     };
 
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/v1/task/add`, payload, {
+      const res = await axios.post(`${BACKEND_URL}/api/v1/task/update`, payload, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "x-user-id": userId,

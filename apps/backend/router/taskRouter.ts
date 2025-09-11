@@ -125,4 +125,37 @@ router.delete(
   }
 );
 
+
+router.post("/update", async (req, res) => {
+  const body = req.body;
+
+  const parsedData = TaskCreateSchema.safeParse(body);
+
+  if (!parsedData.success)
+    return res.status(411).json({
+      message: "Invalid body",
+    });
+  const userId = req.headers["x-user-id"];
+
+  const task = await client.task.update({
+    data: {
+      userId: userId,
+      trigger: {
+        create: {
+          triggerId: parsedData.data.trigger.availableTriggerId,
+        },
+      },
+      action: {
+        create: parsedData.data.actions.map((x, index) => ({
+          actionId: x.availableActionId,
+          sortingOrder: index,
+          metadata: x.actionMetadata,
+        })),
+      },
+    },
+  });
+  return res.json({
+    task,
+  });
+});
 export const taskRouter = router;
