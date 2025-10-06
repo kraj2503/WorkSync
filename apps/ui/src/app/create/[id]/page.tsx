@@ -56,7 +56,7 @@ function useActionsAndTriggers(id: string, accessToken?: string | null) {
 
         if (data.trigger) {
           console.log(data.trigger.id);
-          
+
           setTrigger({
             id: data.trigger.id,
             triggerId: data.trigger.type.id,
@@ -73,25 +73,27 @@ function useActionsAndTriggers(id: string, accessToken?: string | null) {
               availableTaskId: a.actionId,
               availableTaskName: a.action.name,
               metadata: a.metadata || {},
-            })))
-          }
+            }))
+          );
+        }
       })
       .catch((err) => {
         console.error("Error fetching existing task flow:", err);
       });
   }, [id, accessToken]);
-console.log(`actions`,actions);
+  console.log(`actions`, actions);
 
   return { trigger, actions };
 }
 
 export default function TaskFlow() {
   const params = useParams<{ id: string }>();
-  const { user: data, session: accessToken, userId} = useAuth();
+  const { user: data, session: accessToken, userId } = useAuth();
 
   const { availableActions, availableTrigger } =
     useAvailableActionsandTriggers();
-  const { trigger, actions } = useActionsAndTriggers(params.id, accessToken);
+  const taskId = params.id;
+  const { trigger, actions } = useActionsAndTriggers(taskId, accessToken);
 
   const [selectedTrigger, setSelectedTrigger] = useState<{
     id: string;
@@ -106,10 +108,15 @@ export default function TaskFlow() {
     }[]
   >([]);
 
+  const [selectedModalAction, setSelectedModalAction] = useState<{
+    id?: string;
+    name?: string;
+    metadata?: any;
+  }>({});
+
   const [selectedModelIndex, setSelectedModelIndex] = useState<number | null>(
     null
   );
-
 
   const Router = useRouter();
 
@@ -123,14 +130,20 @@ export default function TaskFlow() {
   }, [trigger, actions]);
 
   const handleCreateFlow = async () => {
-    console.log(`Access token ${accessToken}, UserId: ${userId}  selectedTrigger: ${selectedTrigger}`);
-    
-    if (!accessToken  || !selectedTrigger) {
+    console.log(
+      `Access token ${accessToken}, UserId: ${userId}  selectedTrigger: ${selectedTrigger}`
+    );
+
+    if (!accessToken || !selectedTrigger) {
       console.error("Missing accessToken or trigger data");
       return;
     }
 
     const payload = {
+      id: {
+        userId: userId,
+        taskId: taskId,
+      },
       trigger: {
         availableTriggerId: selectedTrigger.id,
         triggerMetadata: {},
@@ -143,12 +156,16 @@ export default function TaskFlow() {
     };
 
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/v1/task/update`, payload, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "x-user-id": userId,
-        },
-      });
+      const res = await axios.post(
+        `${BACKEND_URL}/api/v1/task/update`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "x-user-id": userId,
+          },
+        }
+      );
       alert("Task created");
       Router.push("/dashboard");
     } catch (err) {
@@ -156,6 +173,9 @@ export default function TaskFlow() {
       console.error("Error creating task:", err);
     }
   };
+  const existingAction = selectedAction.find(
+    (a) => a.index === selectedModelIndex
+  );
 
   return (
     <>
@@ -169,7 +189,7 @@ export default function TaskFlow() {
         <div className="flex justify-center w-full">
           <TaskCell
             name={selectedTrigger?.name || "Trigger"}
-            index={1}
+            key={1}
             onClick={() => {
               setSelectedModelIndex(1);
             }}
@@ -178,17 +198,36 @@ export default function TaskFlow() {
 
         {selectedAction.map((action) => {
           return (
-            <div
-              key={`action-${action.index}`}
-              className="flex justify-center w-full mt-5"
-            >
+            <div className="relative flex justify-center w-full mt-5 group">
               <TaskCell
+                key={action.index}
                 name={action.availableTaskName || "Action"}
-                index={action.index}
                 onClick={() => {
-                  setSelectedModelIndex(action.index);
+                  const existing = selectedAction.find(
+                    (a) => a.index === action.index
+                  );
+
+                  console.log("Opening modal for action:", existing);
+
+                  setSelectedModelIndex(action.index); // open modal
+                  setSelectedModalAction({
+                    id: existing?.availableTaskId,
+                    name: existing?.availableTaskName,
+                    metadata: existing?.metadata || {},
+                  });
                 }}
               />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedAction((prev) =>
+                    prev.filter((a) => a.index !== action.index)
+                  );
+                }}
+                className="absolute top-1/2 right-[35%] -translate-y-1/2 bg-white text-gray-500 hover:text-red-600 rounded-full w-6 h-6 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition"
+              >
+                ✕
+              </button>
             </div>
           );
         })}
@@ -211,19 +250,22 @@ export default function TaskFlow() {
       </div>
       {selectedModelIndex && (
         <Model
+          initialAction={selectedModalAction}
           onSelect={(
             props: null | { name: string; id: string; metadata: any }
           ) => {
-            if (props === null) {
+            if (!props) {
               setSelectedModelIndex(null);
               return;
             }
+
             if (selectedModelIndex === 1) {
               setSelectedTrigger({
                 id: props.id,
                 name: props.name,
               });
             } else {
+              // Update action with selected metadata from modal
               setSelectedAction((prevActions) =>
                 prevActions.map((action) =>
                   action.index === selectedModelIndex
@@ -254,6 +296,7 @@ function Model({
   index,
   onSelect,
   availableItems,
+  initialAction, // <--- pass this from TaskFlow
 }: {
   index: number;
   onSelect: (props: null | { name: string; id: string; metadata: any }) => void;
@@ -262,14 +305,16 @@ function Model({
     name: string;
     image: string;
   }[];
+  initialAction: { id?: string; name?: string; metadata?: any };
 }) {
+  console.log("Model opened with initialAction:", initialAction);
   const [step, setStep] = useState(0);
-  const [selectedAction, setSelectedAction] = useState<{
-    id?: string;
-    name?: string;
-  }>({});
+  const [selectedAction, setSelectedAction] = useState(initialAction);
   const isTrigger = index === 1;
-
+  useEffect(() => {
+    console.log("initialAction changed:", initialAction);
+    setSelectedAction(initialAction);
+  }, [initialAction]);
   // Reset step when modal closes
   const handleClose = () => {
     setStep(0);
@@ -314,6 +359,7 @@ function Model({
           {/* Conditional rendering based on step and selected action */}
           {step === 1 && selectedAction.name === "Send Email" && (
             <EmailSelector
+              initialMetadata={selectedAction.metadata}
               setMetadata={(metadata) => {
                 onSelect({
                   ...selectedAction,
@@ -351,6 +397,7 @@ function Model({
                       setSelectedAction({
                         id,
                         name,
+                        metadata: selectedAction.metadata || {},
                       });
                     }
                   }}
@@ -369,11 +416,15 @@ function Model({
 
 const EmailSelector = ({
   setMetadata,
+  initialMetadata = {},
 }: {
   setMetadata: (params: any) => void;
+  initialMetadata?: { email?: string; body?: string };
 }) => {
-  const [email, setEmail] = useState("");
-  const [body, setBody] = useState("");
+  console.log("EmailSelector initialMetadata:", initialMetadata);
+
+  const [email, setEmail] = useState(initialMetadata.email || "");
+  const [body, setBody] = useState(initialMetadata.body || "");
 
   return (
     <div className="p-4">
