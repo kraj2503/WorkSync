@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware";
-import { TaskCreateSchema } from "@repo/types";
+import { TaskCreateSchema, TaskUpdateSchema } from "@repo/types";
 import { PrismaClient } from "@prisma/client";
 
 const router = Router();
@@ -129,7 +129,7 @@ router.delete(
 router.post("/update", async (req, res) => {
   const body = req.body;
 
-  const parsedData = TaskCreateSchema.safeParse(body);
+  const parsedData = TaskUpdateSchema.safeParse(body);
 
   if (!parsedData.success)
     return res.status(411).json({
@@ -137,12 +137,19 @@ router.post("/update", async (req, res) => {
     });
   const userId = req.headers["x-user-id"];
 
+await client.action.deleteMany({
+  where: { taskId: parsedData.data.id.taskId },
+});
+
   const task = await client.task.update({
+    where: {
+      userId: parsedData.data.id.userId,
+      id: parsedData.data.id.taskId,
+    },
     data: {
-      userId: userId,
       trigger: {
-        create: {
-          triggerId: parsedData.data.trigger.availableTriggerId,
+        connect: {
+          id: parsedData.data.trigger.availableTriggerId,
         },
       },
       action: {
