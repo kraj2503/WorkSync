@@ -2,6 +2,7 @@ export const TaskCell = ({
   name,
   key,
   onClick,
+  
 }: {
   name?: string;
   key: number;

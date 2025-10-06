@@ -3,6 +3,8 @@ import { TOPIC_NAME } from "@repo/config";
 import { PrismaClient } from "@prisma/client";
 import type { JsonObject } from "@prisma/client/runtime/library";
 import { Parse } from "./parser";
+import { sendEmail } from "./availableActions/email";
+import { sendSolana } from "./availableActions/solana";
 
 const kafka = new Kafka({
   clientId: "taskOutboxReader",
@@ -63,12 +65,14 @@ async function main() {
       if (currentStage?.action.id === "email") {
         const taskMetadata = taskRundetails?.metadata;
         
-        const body = Parse(
-          (currentStage.metadata as JsonObject)?.body as string,
-          taskMetadata
-        );
+        
         const to = Parse(
           (currentStage.metadata as JsonObject)?.email as string,
+          taskMetadata
+        );
+
+        const body = Parse(
+          (currentStage.metadata as JsonObject)?.body as string,
           taskMetadata
         );
 
