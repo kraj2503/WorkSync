@@ -1,19 +1,19 @@
 // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
-import { WebClient, LogLevel } from "@slack/web-api";
+import { WebClient, LogLevel, type Block, type KnownBlock } from "@slack/web-api";
 import { App } from "@slack/bolt";
-import { SLACK_XAPP,SLACK_XOXB } from "@repo/config";
+import { SLACK_XAPP, SLACK_XOXB } from "@repo/config";
 
 const client = new WebClient(SLACK_XOXB, {
   // LogLevel can be imported and used to make debugging simpler
   logLevel: LogLevel.DEBUG,
 });
 
-async function findConversation(name:string) {
+async function findConversation(name: string) {
   try {
     // Call the conversations.list method using the built-in WebClient
     const result = await client.conversations.list({
       // The token you used to initialize your app
-      token: SLACK_XOXB
+      token: SLACK_XOXB,
     });
 
     for (const channel of result.channels) {
@@ -26,21 +26,51 @@ async function findConversation(name:string) {
         break;
       }
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
   }
 }
 
-async function publishMessage(id:string, text:string) {
-  try {
 
+
+async function publishMessage(metadata: any) {
+  try {
+    const blocks: KnownBlock[] = [
+      {
+        type: "header",
+        text: { type: "plain_text", text: metadata.headerText },
+      } as KnownBlock,
+      {
+        type: "section",
+        fields: metadata.fields.map((f: any) => ({ type: f.type, text: f.text })),
+      } as KnownBlock,
+      metadata.contextText
+        ? ({
+            type: "context",
+            elements: [{ type: "mrkdwn", text: metadata.contextText }],
+          } as KnownBlock)
+        : undefined,
+      metadata.buttons && metadata.buttons.length > 0
+        ? ({
+            type: "actions",
+            elements: metadata.buttons.map((b: any) => ({
+              type: "button",
+              text: { type: "plain_text", text: b.text },
+              value: b.value,
+              style: b.style,
+            })),
+          } as KnownBlock)
+        : undefined,
+    ].filter((b): b is KnownBlock => !!b); 
+  
+const id = metadata.channelId;
     await client.conversations.join({ channel: id });
+
     const result = await client.chat.postMessage({
       token: SLACK_XOXB,
       channel: id,
-      text: text,
-      // You could also use a blocks[] array to send richer content
+      blocks,
+      text: metadata.headerText || "Message",
     });
 
     console.log(result);
@@ -48,14 +78,14 @@ async function publishMessage(id:string, text:string) {
     console.error(error);
   }
 }
-export { publishMessage, findConversation }
+
+export { publishMessage, findConversation };
 
 const app = new App({
   token: SLACK_XOXB,
   appToken: SLACK_XAPP,
-  socketMode: true
+  socketMode: true,
 });
-
 // Listen for mentions
 app.event("app_mention", async ({ event, say }) => {
   console.log("👋 Bot mentioned by:", event.user);

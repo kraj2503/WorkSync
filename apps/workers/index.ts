@@ -54,10 +54,12 @@ async function main() {
           },
         },
       });
+      console.log("taskRundetails", taskRundetails);
 
       const currentStage = taskRundetails?.task.action.find(
         (x) => x.sortingOrder === stage
       );
+      console.log("currentStage", currentStage);
 
       if (!currentStage) {
         console.log(`"Current action not found`);
@@ -65,8 +67,7 @@ async function main() {
 
       if (currentStage?.action.id === "email") {
         const taskMetadata = taskRundetails?.metadata;
-        
-        
+
         const to = Parse(
           (currentStage.metadata as JsonObject)?.email as string,
           taskMetadata
@@ -78,44 +79,31 @@ async function main() {
         );
 
         console.log(`Sending out email to ${to} , body is ${body}`);
-          await sendEmail(to, body);
+        await sendEmail(to, body);
       }
 
       if (currentStage?.action.id === "solana") {
         const taskMetadata = taskRundetails?.metadata;
-        
+
         const amount = Parse(
-            (currentStage.metadata as JsonObject)?.amount as string,
-            taskMetadata
-          );
-          const address = Parse(
-            (currentStage.metadata as JsonObject)?.address as string,
-            taskMetadata
-          );
-        
-        
+          (currentStage.metadata as JsonObject)?.amount as string,
+          taskMetadata
+        );
+        const address = Parse(
+          (currentStage.metadata as JsonObject)?.address as string,
+          taskMetadata
+        );
+
         console.log(`Sending out solana to ${address}, amount ${amount}`);
-          
-        await sendSolana(address,amount)
-      
-      
-      }
-      else if (currentStage?.action.id === "Slack") {
+
+        await sendSolana(address, amount);
+      } else if (currentStage?.action.id === "Slack") {
         const taskMetadata = taskRundetails?.metadata;
-          const body = Parse(
-            (currentStage.metadata as JsonObject)?.body as string,
-            taskMetadata
-          );
-          const channelId = Parse(
-            (currentStage.metadata as JsonObject)?.body as string,
-            taskMetadata
-          );
-        
-        publishMessage(channelId,body);
+        const metadata = currentStage.metadata;
+        console.log(taskMetadata);
+
+        await publishMessage(metadata);
       }
-
-
-
 
       const lastStage = (taskRundetails?.task.action.length || 1) - 1;
       if (lastStage !== stage) {

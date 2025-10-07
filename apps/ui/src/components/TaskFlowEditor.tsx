@@ -10,6 +10,7 @@ import { TaskCell } from "@/components/taskCell";
 import EmailSelector from "./ActionSelectors/EmailSelector";
 import SolanaSelector from "./ActionSelectors/SolanaSelector";
 import SlackSelector from "./ActionSelectors/Slack";
+import SlackBlockBuilder from "./ActionSelectors/SolanaSelector";
 
 
 interface TaskFlowProps{
@@ -345,7 +346,7 @@ console.log(selectedAction);
             />
           )}
           {step === 1 && selectedAction.name === "Slack-Dm" && (
-            <SlackSelector
+            <SlackBlockBuilder
               setMetadata={(metadata) => {
                 onSelect({
                   ...selectedAction,
