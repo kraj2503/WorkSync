@@ -5,6 +5,7 @@ import type { JsonObject } from "@prisma/client/runtime/library";
 import { Parse } from "./parser";
 import { sendEmail } from "./availableActions/email";
 import { sendSolana } from "./availableActions/solana";
+import { publishMessage } from "./availableActions/Slack";
 
 const kafka = new Kafka({
   clientId: "taskOutboxReader",
@@ -98,6 +99,19 @@ async function main() {
         await sendSolana(address,amount)
       
       
+      }
+      else if (currentStage?.action.id === "Slack") {
+        const taskMetadata = taskRundetails?.metadata;
+          const body = Parse(
+            (currentStage.metadata as JsonObject)?.body as string,
+            taskMetadata
+          );
+          const channelId = Parse(
+            (currentStage.metadata as JsonObject)?.body as string,
+            taskMetadata
+          );
+        
+        publishMessage(channelId,body);
       }
 
 

@@ -7,6 +7,9 @@ import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { TaskCell } from "@/components/taskCell";
+import EmailSelector from "./ActionSelectors/EmailSelector";
+import SolanaSelector from "./ActionSelectors/SolanaSelector";
+import SlackSelector from "./ActionSelectors/Slack";
 
 
 interface TaskFlowProps{
@@ -282,6 +285,7 @@ function Model({
     setSelectedAction({});
     onSelect(null);
   };
+console.log(selectedAction);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -330,8 +334,18 @@ function Model({
             />
           )}
 
-          {step === 1 && selectedAction.name === "solana" && (
+          {step === 1 && selectedAction.name === "Solana" && (
             <SolanaSelector
+              setMetadata={(metadata) => {
+                onSelect({
+                  ...selectedAction,
+                  metadata,
+                } as { name: string; id: string; metadata: any });
+              }}
+            />
+          )}
+          {step === 1 && selectedAction.name === "Slack-Dm" && (
+            <SlackSelector
               setMetadata={(metadata) => {
                 onSelect({
                   ...selectedAction,
@@ -375,87 +389,6 @@ function Model({
   );
 }
 
-const EmailSelector = ({
-  setMetadata,
-  initialMetadata = {},
-}: {
-  setMetadata: (params: any) => void;
-  initialMetadata?: { email?: string; body?: string };
-}) => {
-  console.log("EmailSelector initialMetadata:", initialMetadata);
-
-  const [email, setEmail] = useState(initialMetadata.email || "");
-  const [body, setBody] = useState(initialMetadata.body || "");
-
-  return (
-    <div className="p-4">
-      <Input
-        type="text"
-        placeholder="To"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="mb-3"
-      />
-      <Input
-        type="text"
-        placeholder="Body"
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-        className="mb-3"
-      />
-
-      <Button
-        onClick={() => {
-          setMetadata({
-            email,
-            body,
-          });
-        }}
-      >
-        Submit
-      </Button>
-    </div>
-  );
-};
-
-const SolanaSelector = ({
-  setMetadata,
-}: {
-  setMetadata: (params: any) => void;
-}) => {
-  const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState("");
-
-  return (
-    <div className="p-4">
-      <Input
-        type="text"
-        placeholder="Wallet Address"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        className="mb-3"
-      />
-      <Input
-        type="number"
-        placeholder="Amount (SOL)"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="mb-3"
-      />
-
-      <Button
-        onClick={() => {
-          setMetadata({
-            address,
-            amount,
-          });
-        }}
-      >
-        Submit
-      </Button>
-    </div>
-  );
-};
 
 
 
