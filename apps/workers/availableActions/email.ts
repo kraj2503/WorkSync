@@ -1,11 +1,12 @@
 import nodemailer from "nodemailer";
-const SENDER_EMAIL = process.env.SENDER_EMAIL;
-const APP_PASSWORD = process.env.APP_PASSWORD;
+// const SENDER_EMAIL = process.env.SENDER_EMAIL;
+import { APP_PASSWORD, SENDER_EMAIL } from "@repo/config";
 export async function sendEmail(to: string, body: string) {
   // Basic validation: Check if required fields are present
   if (!to || !body) {
     console.log(`Error invalid inputs`);
   }
+console.log(SENDER_EMAIL);
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
