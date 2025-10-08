@@ -2,7 +2,6 @@
 import {
   WebClient,
   LogLevel,
-  type Block,
   type KnownBlock,
 } from "@slack/web-api";
 import { App } from "@slack/bolt";
@@ -57,18 +56,7 @@ async function publishMessage(metadata: any) {
             type: "context",
             elements: [{ type: "mrkdwn", text: metadata.contextText }],
           } as KnownBlock)
-        : undefined,
-      metadata.buttons && metadata.buttons.length > 0
-        ? ({
-            type: "actions",
-            elements: metadata.buttons.map((b: any) => ({
-              type: "button",
-              text: { type: "plain_text", text: b.text },
-              value: b.value,
-              style: b.style,
-            })),
-          } as KnownBlock)
-        : undefined,
+        : undefined
     ].filter((b): b is KnownBlock => !!b);
 
     const id = metadata.channelId;
@@ -94,7 +82,6 @@ const app = new App({
   appToken: SLACK_XAPP,
   socketMode: true,
 });
-// Listen for mentions
 app.event("app_mention", async ({ event, say }) => {
   console.log("👋 Bot mentioned by:", event.user);
   console.log("📩 Message text:", event.text);
@@ -110,7 +97,6 @@ app.event("app_mention", async ({ event, say }) => {
   await say(reply);
 });
 
-// Start the b ot
 (async () => {
   await app.start(process.env.PORT || 3000);
   console.log("⚡️ Worksync bot is running!");

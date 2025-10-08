@@ -3,14 +3,12 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BACKEND_URL } from "@repo/config";
 import axios from "axios";
-import { useParams, useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { TaskCell } from "@/components/taskCell";
 import EmailSelector from "./ActionSelectors/EmailSelector";
 import SolanaSelector from "./ActionSelectors/SolanaSelector";
-import SlackSelector from "./ActionSelectors/Slack";
-import SlackBlockBuilder from "./ActionSelectors/SolanaSelector";
+import SlackBlockBuilder from "./ActionSelectors/Slack";
 
 
 interface TaskFlowProps{
@@ -337,6 +335,7 @@ console.log(selectedAction);
 
           {step === 1 && selectedAction.name === "Solana" && (
             <SolanaSelector
+              // initialMetadata={selectedAction.metadata}
               setMetadata={(metadata) => {
                 onSelect({
                   ...selectedAction,
@@ -347,6 +346,7 @@ console.log(selectedAction);
           )}
           {step === 1 && selectedAction.name === "Slack-Dm" && (
             <SlackBlockBuilder
+              initialMetadata={selectedAction.metadata}
               setMetadata={(metadata) => {
                 onSelect({
                   ...selectedAction,
