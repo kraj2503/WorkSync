@@ -25,6 +25,7 @@ model Task {
   user    User      @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
   taskRun TaskRun[]
   trigger Trigger?
+  markedasDelete Boolean @default(false)
 
   @@map("Task")
 }

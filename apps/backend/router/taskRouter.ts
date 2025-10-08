@@ -46,6 +46,7 @@ router.get("/getTasks", authMiddleware, async (req, res) => {
   const tasks = await client.task.findMany({
     where: {
       userId: userId,
+      markedasDelete:false
     },
     include: {
       trigger: {
@@ -98,16 +99,21 @@ router.get("/getTasks/:getTask", authMiddleware, async (req, res) => {
 });
 
 router.delete(
-  "/deleteTask/:taskId",
+  "/:taskId",
   authMiddleware,
   async (req, res) => {
     const taskId = req.params.taskId;
     try {
-      const deleteTask = await client.task.delete({
+      const deleteTask = await client.task.update({
         where: {
           id: taskId,
         },
+        data: {
+          markedasDelete:true
+        }
       });
+      console.log(deleteTask);
+      
       if (deleteTask)
         return res.json({
           task: taskId,
