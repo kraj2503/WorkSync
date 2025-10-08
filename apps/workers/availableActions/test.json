@@ -1,0 +1,201 @@
+{
+  "ok": true,
+  "channels": [
+    {
+      "id": "C09K3U61HEE",
+      "created": 1759818216,
+      "creator": "U09K0DXNFMK",
+      "is_org_shared": false,
+      "is_im": false,
+      "context_team_id": "T09KGQSQR97",
+      "updated": 1759818306166,
+      "name": "all-worksync",
+      "name_normalized": "all-worksync",
+      "is_channel": true,
+      "is_group": false,
+      "is_mpim": false,
+      "is_private": false,
+      "is_archived": false,
+      "is_general": true,
+      "is_shared": false,
+      "is_ext_shared": false,
+      "unlinked": 0,
+      "is_pending_ext_shared": false,
+      "pending_shared": [],
+      "parent_conversation": null,
+      "purpose": {
+        "value": "Share announcements and updates about company news, upcoming events, or teammates who deserve some kudos. ⭐",
+        "creator": "U09K0DXNFMK",
+        "last_set": 1759818216
+      },
+      "topic": { "value": "", "creator": "", "last_set": 0 },
+      "shared_team_ids": ["T09KGQSQR97"],
+      "pending_connected_team_ids": [],
+      "is_member": false,
+      "num_members": 1,
+      "properties": { "use_case": "welcome" },
+      "previous_names": ["all-new-workspace"]
+    },
+    {
+      "id": "C09K3UF6U9Y",
+      "created": 1759818340,
+      "creator": "U09K0DXNFMK",
+      "is_org_shared": false,
+      "is_im": false,
+      "context_team_id": "T09KGQSQR97",
+      "updated": 1759818357323,
+      "name": "work-sync-tasks",
+      "name_normalized": "work-sync-tasks",
+      "is_channel": true,
+      "is_group": false,
+      "is_mpim": false,
+      "is_private": false,
+      "is_archived": false,
+      "is_general": false,
+      "is_shared": false,
+      "is_ext_shared": false,
+      "unlinked": 0,
+      "is_pending_ext_shared": false,
+      "pending_shared": [],
+      "parent_conversation": null,
+      "purpose": {
+        "value": "A dedicated space for the Engineering team to track and manage daily tasks, progress, and collaboration.",
+        "creator": "U09K0DXNFMK",
+        "last_set": 1759818340
+      },
+      "topic": {
+        "value": "Focus: Task tracking and progress monitoring for Engineering team.",
+        "creator": "U09K0DXNFMK",
+        "last_set": 1759818340
+      },
+      "shared_team_ids": ["T09KGQSQR97"],
+      "pending_connected_team_ids": [],
+      "is_member": false,
+      "num_members": 1,
+      "properties": {
+        "tabs": [
+          {
+            "id": "Ct09K1R64G78",
+            "label": "Engineering Task Tracker",
+            "type": "list",
+            "data": {
+              "file_id": "F09K1R4990W",
+              "shared_ts": "1759818356.752279",
+              "bot_user_id": "USLACKBOT",
+              "mute_edit_updates": true
+            }
+          },
+          {
+            "id": "Ct09KY66J2KA",
+            "label": "Engineering Team Overview",
+            "type": "canvas",
+            "data": {
+              "file_id": "F09JXFYA61H",
+              "shared_ts": "1759818357.216689",
+              "bot_user_id": "USLACKBOT",
+              "mute_edit_updates": true
+            }
+          }
+        ],
+        "tabz": [
+          {
+            "id": "Ct09K1R64G78",
+            "label": "Engineering Task Tracker",
+            "type": "list",
+            "data": {
+              "file_id": "F09K1R4990W",
+              "shared_ts": "1759818356.752279",
+              "bot_user_id": "USLACKBOT",
+              "mute_edit_updates": true
+            }
+          },
+          {
+            "id": "Ct09KY66J2KA",
+            "label": "Engineering Team Overview",
+            "type": "canvas",
+            "data": {
+              "file_id": "F09JXFYA61H",
+              "shared_ts": "1759818357.216689",
+              "bot_user_id": "USLACKBOT",
+              "mute_edit_updates": true
+            }
+          }
+        ],
+        "use_case": "project"
+      },
+      "previous_names": []
+    },
+    {
+      "id": "C09KGQT5QF3",
+      "created": 1759818216,
+      "creator": "U09K0DXNFMK",
+      "is_org_shared": false,
+      "is_im": false,
+      "context_team_id": "T09KGQSQR97",
+      "updated": 1759818221212,
+      "name": "social",
+      "name_normalized": "social",
+      "is_channel": true,
+      "is_group": false,
+      "is_mpim": false,
+      "is_private": false,
+      "is_archived": false,
+      "is_general": false,
+      "is_shared": false,
+      "is_ext_shared": false,
+      "unlinked": 0,
+      "is_pending_ext_shared": false,
+      "pending_shared": [],
+      "parent_conversation": null,
+      "purpose": {
+        "value": "Other channels are for work. This one’s just for fun. Get to know your teammates and show your lighter side. 🎈",
+        "creator": "U09K0DXNFMK",
+        "last_set": 1759818216
+      },
+      "topic": { "value": "", "creator": "", "last_set": 0 },
+      "shared_team_ids": ["T09KGQSQR97"],
+      "pending_connected_team_ids": [],
+      "is_member": false,
+      "num_members": 1,
+      "properties": {
+        "tabs": [
+          {
+            "id": "Ct09K3U6U69G",
+            "type": "canvas",
+            "data": {
+              "file_id": "F09K3U6KMPC",
+              "shared_ts": "1759818220.983679"
+            },
+            "label": ""
+          }
+        ],
+        "tabz": [
+          {
+            "id": "Ct09K3U6U69G",
+            "type": "canvas",
+            "data": {
+              "file_id": "F09K3U6KMPC",
+              "shared_ts": "1759818220.983679"
+            }
+          }
+        ],
+        "use_case": "random"
+      },
+      "previous_names": []
+    }
+  ],
+  "response_metadata": {
+    "next_cursor": "",
+    "scopes": ["chat:write", "channels:read"],
+    "acceptedScopes": [
+      "channels:read",
+      "groups:read",
+      "mpim:read",
+      "im:read",
+      "read"
+    ]
+  }
+}
+
+
+// [DEBUG]  web-api:WebClient:0 http request result: {"ok":true,"channels":[{"id":"C09K3U61HEE","created":1759818216,"creator":"U09K0DXNFMK","is_org_shared":false,"is_im":false,"context_team_id":"T09KGQSQR97","updated":1759818306166,"name":"all-worksync","name_normalized":"all-worksync","is_channel":true,"is_group":false,"is_mpim":false,"is_private":false,"is_archived":false,"is_general":true,"is_shared":false,"is_ext_shared":false,"unlinked":0,"is_pending_ext_shared":false,"pending_shared":[],"parent_conversation":null,"purpose":{"value":"Share announcements and updates about company news, upcoming events, or teammates who deserve some kudos. ⭐","creator":"U09K0DXNFMK","last_set":1759818216},"topic":{"value":"","creator":"","last_set":0},"shared_team_ids":["T09KGQSQR97"],"pending_connected_team_ids":[],"is_member":false,"num_members":1,"properties":{"use_case":"welcome"},"previous_names":["all-new-workspace"]},{"id":"C09K3UF6U9Y","created":1759818340,"creator":"U09K0DXNFMK","is_org_shared":false,"is_im":false,"context_team_id":"T09KGQSQR97","updated":1759818357323,"name":"work-sync-tasks","name_normalized":"work-sync-tasks","is_channel":true,"is_group":false,"is_mpim":false,"is_private":false,"is_archived":false,"is_general":false,"is_shared":false,"is_ext_shared":false,"unlinked":0,"is_pending_ext_shared":false,"pending_shared":[],"parent_conversation":null,"purpose":{"value":"A dedicated space for the Engineering team to track and manage daily tasks, progress, and collaboration.","creator":"U09K0DXNFMK","last_set":1759818340},"topic":{"value":"Focus: Task tracking and progress monitoring for Engineering team.","creator":"U09K0DXNFMK","last_set":1759818340},"shared_team_ids":["T09KGQSQR97"],"pending_connected_team_ids":[],"is_member":false,"num_members":1,"properties":{"tabs":[{"id":"Ct09K1R64G78","label":"Engineering Task Tracker","type":"list","data":{"file_id":"F09K1R4990W","shared_ts":"1759818356.752279","bot_user_id":"USLACKBOT","mute_edit_updates":true}},{"id":"Ct09KY66J2KA","label":"Engineering Team Overview","type":"canvas","data":{"file_id":"F09JXFYA61H","shared_ts":"1759818357.216689","bot_user_id":"USLACKBOT","mute_edit_updates":true}}],"tabz":[{"id":"Ct09K1R64G78","label":"Engineering Task Tracker","type":"list","data":{"file_id":"F09K1R4990W","shared_ts":"1759818356.752279","bot_user_id":"USLACKBOT","mute_edit_updates":true}},{"id":"Ct09KY66J2KA","label":"Engineering Team Overview","type":"canvas","data":{"file_id":"F09JXFYA61H","shared_ts":"1759818357.216689","bot_user_id":"USLACKBOT","mute_edit_updates":true}}],"use_case":"project"},"previous_names":[]},{"id":"C09KGQT5QF3","created":1759818216,"creator":"U09K0DXNFMK","is_org_shared":false,"is_im":false,"context_team_id":"T09KGQSQR97","updated":1759818221212,"name":"social","name_normalized":"social","is_channel":true,"is_group":false,"is_mpim":false,"is_private":false,"is_archived":false,"is_general":false,"is_shared":false,"is_ext_shared":false,"unlinked":0,"is_pending_ext_shared":false,"pending_shared":[],"parent_conversation":null,"purpose":{"value":"Other channels are for work. This one’s just for fun. Get to know your teammates and show your lighter side. 🎈","creator":"U09K0DXNFMK","last_set":1759818216},"topic":{"value":"","creator":"","last_set":0},"shared_team_ids":["T09KGQSQR97"],"pending_connected_team_ids":[],"is_member":false,"num_members":1,"properties":{"tabs":[{"id":"Ct09K3U6U69G","type":"canvas","data":{"file_id":"F09K3U6KMPC","shared_ts":"1759818220.983679"},"label":""}],"tabz":[{"id":"Ct09K3U6U69G","type":"canvas","data":{"file_id":"F09K3U6KMPC","shared_ts":"1759818220.983679"}}],"use_case":"random"},"previous_names":[]}],"response_metadata":{"next_cursor":"","scopes":["chat:write","channels:read"],"acceptedScopes":["channels:read","groups:read","mpim:read","im:read","read"]}}

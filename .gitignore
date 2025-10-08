@@ -36,5 +36,3 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
-packages/config/index.ts
-packages/config

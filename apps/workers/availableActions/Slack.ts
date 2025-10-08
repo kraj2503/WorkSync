@@ -1,10 +1,15 @@
 // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
 import { WebClient, LogLevel, type Block, type KnownBlock } from "@slack/web-api";
 import { App } from "@slack/bolt";
-import { SLACK_XAPP, SLACK_XOXB } from "@repo/config";
+
+const SLACK_XAPP = process.env.SLACK_XAPP;
+const SLACK_XOXB = process.env.SLACK_XOXB;
+
+
+console.log(SLACK_XAPP);
+console.log(SLACK_XOXB);
 
 const client = new WebClient(SLACK_XOXB, {
-  // LogLevel can be imported and used to make debugging simpler
   logLevel: LogLevel.DEBUG,
 });
 
