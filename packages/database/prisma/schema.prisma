@@ -88,3 +88,9 @@ model TaskRunOutbox {
 
   @@map("TaskRunOutbox")
 }
+
+
+model slackAI{
+  channelId String @unique
+  conversations Json 
+}

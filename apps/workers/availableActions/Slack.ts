@@ -1,13 +1,15 @@
 // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
-import { WebClient, LogLevel, type Block, type KnownBlock } from "@slack/web-api";
+import {
+  WebClient,
+  LogLevel,
+  type Block,
+  type KnownBlock,
+} from "@slack/web-api";
 import { App } from "@slack/bolt";
+import { CHATAI } from "../openAi";
 
 const SLACK_XAPP = process.env.SLACK_XAPP;
 const SLACK_XOXB = process.env.SLACK_XOXB;
-
-
-console.log(SLACK_XAPP);
-console.log(SLACK_XOXB);
 
 const client = new WebClient(SLACK_XOXB, {
   logLevel: LogLevel.DEBUG,
@@ -36,8 +38,6 @@ async function findConversation(name: string) {
   }
 }
 
-
-
 async function publishMessage(metadata: any) {
   try {
     const blocks: KnownBlock[] = [
@@ -47,7 +47,10 @@ async function publishMessage(metadata: any) {
       } as KnownBlock,
       {
         type: "section",
-        fields: metadata.fields.map((f: any) => ({ type: f.type, text: f.text })),
+        fields: metadata.fields.map((f: any) => ({
+          type: f.type,
+          text: f.text,
+        })),
       } as KnownBlock,
       metadata.contextText
         ? ({
@@ -66,9 +69,9 @@ async function publishMessage(metadata: any) {
             })),
           } as KnownBlock)
         : undefined,
-    ].filter((b): b is KnownBlock => !!b); 
-  
-const id = metadata.channelId;
+    ].filter((b): b is KnownBlock => !!b);
+
+    const id = metadata.channelId;
     await client.conversations.join({ channel: id });
 
     const result = await client.chat.postMessage({
@@ -97,11 +100,17 @@ app.event("app_mention", async ({ event, say }) => {
   console.log("📩 Message text:", event.text);
   console.log("🧭 Channel:", event.channel);
 
-  // Optionally respond in Slack
-  await say(`Hey <@${event.user}>! I saw your message.`);
+  const reply = await CHATAI({
+    user: event.user ?? "",
+
+    ChannelId: event.channel,
+    userContext: event.text,
+  });
+
+  await say(reply);
 });
 
-// Start the bot
+// Start the b ot
 (async () => {
   await app.start(process.env.PORT || 3000);
   console.log("⚡️ Worksync bot is running!");
