@@ -1,6 +1,4 @@
-
-
-import TaskFlow from "@/components/TaskFlowEditor";
+import TaskFlow from "@/components/TaskFlow/TaskFlowEditor";
 
 export default function TaskEdit() {
   return <TaskFlow mode="create" />;

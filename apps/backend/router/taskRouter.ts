@@ -23,14 +23,13 @@ router.post("/add", async (req, res) => {
       trigger: {
         create: {
           triggerId: parsedData.data.trigger.availableTriggerId,
-         
         },
       },
       action: {
         create: parsedData.data.actions.map((x, index) => ({
           actionId: x.availableActionId,
           sortingOrder: index,
-           metadata: x.actionMetadata
+          metadata: x.actionMetadata,
         })),
       },
     },
@@ -46,7 +45,7 @@ router.get("/getTasks", authMiddleware, async (req, res) => {
   const tasks = await client.task.findMany({
     where: {
       userId: userId,
-      markedasDelete:false
+      markedasDelete: false,
     },
     include: {
       trigger: {
@@ -98,39 +97,34 @@ router.get("/getTasks/:getTask", authMiddleware, async (req, res) => {
   });
 });
 
-router.delete(
-  "/:taskId",
-  authMiddleware,
-  async (req, res) => {
-    const taskId = req.params.taskId;
-    try {
-      const deleteTask = await client.task.update({
-        where: {
-          id: taskId,
-        },
-        data: {
-          markedasDelete:true
-        }
-      });
-      console.log(deleteTask);
-      
-      if (deleteTask)
-        return res.json({
-          task: taskId,
-          message: "Task deleted",
-        });
-      else {
-        throw new Error();
-      }
-    } catch (e) {
+router.delete("/:taskId", authMiddleware, async (req, res) => {
+  const taskId = req.params.taskId;
+  try {
+    const deleteTask = await client.task.update({
+      where: {
+        id: taskId,
+      },
+      data: {
+        markedasDelete: true,
+      },
+    });
+    console.log(deleteTask);
+
+    if (deleteTask)
       return res.json({
         task: taskId,
-        message: "deletion failed",
+        message: "Task deleted",
       });
+    else {
+      throw new Error();
     }
+  } catch (e) {
+    return res.json({
+      task: taskId,
+      message: "deletion failed",
+    });
   }
-);
-
+});
 
 router.post("/update", async (req, res) => {
   const body = req.body;
@@ -141,32 +135,36 @@ router.post("/update", async (req, res) => {
     return res.status(411).json({
       message: "Invalid body",
     });
-  const userId = req.headers["x-user-id"];
 
-await client.action.deleteMany({
-  where: { taskId: parsedData.data.id.taskId },
-});
+  const task = await client.$transaction(async (tx) => {
+    await tx.action.deleteMany({
+      where: { taskId: parsedData.data.id.taskId },
+    });
 
-  const task = await client.task.update({
-    where: {
-      userId: parsedData.data.id.userId,
-      id: parsedData.data.id.taskId,
-    },
-    data: {
-      trigger: {
-        connect: {
-          id: parsedData.data.trigger.availableTriggerId,
+    const updatedTask = await tx.task.update({
+      where: {
+        userId: parsedData.data.id.userId,
+        id: parsedData.data.id.taskId,
+      },
+      data: {
+        trigger: {
+          update: {
+            id: parsedData.data.trigger.availableTriggerId,
+          },
+        },
+        action: {
+          create: parsedData.data.actions.map((x, index) => ({
+            actionId: x.availableActionId,
+            sortingOrder: index,
+            metadata: x.actionMetadata,
+          })),
         },
       },
-      action: {
-        create: parsedData.data.actions.map((x, index) => ({
-          actionId: x.availableActionId,
-          sortingOrder: index,
-          metadata: x.actionMetadata,
-        })),
-      },
-    },
+    });
+
+    return updatedTask;
   });
+
   return res.json({
     task,
   });

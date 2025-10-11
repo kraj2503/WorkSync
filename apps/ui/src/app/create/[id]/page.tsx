@@ -1,6 +1,6 @@
 "use client";
 
-import TaskFlow from "@/components/TaskFlowEditor";
+import TaskFlow from "@/components/TaskFlow/TaskFlowEditor";
 import { useParams } from "next/navigation";
 
 export default function TaskEdit() {

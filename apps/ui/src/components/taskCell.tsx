@@ -1,20 +1,22 @@
 export const TaskCell = ({
   name,
-  key,
+  index,
   onClick,
   
 }: {
   name?: string;
-  key: number;
+  index: number;
   onClick: () => void;
   }) => {
   
   return (
     <div className="flex" onClick={onClick}>
-      <div className="border border-black py-5 px-4 flex w-[300px] justify-center cursor-pointer">
-        <div className="font-bold">{key}</div>
-
+      <div className="border border-black py-5 px-4 flex w-[300px] justify-center cursor-pointer ">
+        <div className="font-bold pr-1">{index}{"."}</div>
+        <div>
         {name}
+          
+</div>
       </div>
     </div>
   );

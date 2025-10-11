@@ -18,11 +18,11 @@ import { toast } from "sonner";
 import { supabase } from "@repo/supabaseclient";
 
 export default function Dashboard() {
- const router = useRouter();
- const [loading, setLoading] = useState(true);
- const [tasks, setTasks] = useState<any[]>([]);
- const [error, setError] = useState<Error | null>(null);
- const [userId, setUserId] = useState<string>("");
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [error, setError] = useState<Error | null>(null);
+  const [userId, setUserId] = useState<string>("");
   // const [loading, tasks, error, userId] = useTasks();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskIdToDelete, setTaskIdToDelete] = useState<string | null>(null);
@@ -61,7 +61,7 @@ export default function Dashboard() {
     }
   };
 
-  const openTask = (id: string) => {  
+  const openTask = (id: string) => {
     router.push(`/create/${id}`);
   };
 
@@ -70,7 +70,7 @@ export default function Dashboard() {
     setTaskNameToDelete(name);
     setIsModalOpen(true);
   };
-    // Handler to close the modal
+  // Handler to close the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setTaskIdToDelete(null);
@@ -102,8 +102,7 @@ export default function Dashboard() {
       toast.success(`Task "${taskNameToDelete}" successfully deleted.`);
       handleCloseModal();
       // Refetch tasks to update the list immediately
-        await fetchTasks();
-
+      await fetchTasks();
     } catch (err) {
       console.error("Deletion failed:", err);
       toast.error("Failed to delete the task. Please try again.");
@@ -225,7 +224,6 @@ function useTasks(): [boolean, any[], Error | null, string] {
   return [loading, tasks, error, userId ?? ""];
 }
 
-  
 function Tasks({
   tasks,
   userId,
@@ -249,10 +247,11 @@ function Tasks({
   }
 
   return (
-    <Table>
+    <Table className="pr-6">
       <TableCaption className="text-gray-500">
         Manage and trigger your automation tasks easily
       </TableCaption>
+
       <TableHeader>
         <TableRow className="bg-gradient-to-r from-purple-100 to-orange-100">
           <TableHead className="w-[60px] font-semibold text-gray-700">
@@ -261,11 +260,12 @@ function Tasks({
           <TableHead className="font-semibold text-gray-700">Trigger</TableHead>
           <TableHead className="font-semibold text-gray-700">Actions</TableHead>
           <TableHead className="font-semibold text-gray-700">Webhook</TableHead>
-          <TableHead className="text-right font-semibold text-gray-700">
+          <TableHead className="text-right font-semibold text-gray-700 w-[50px] pr-16">
             Status
           </TableHead>
         </TableRow>
       </TableHeader>
+
       <TableBody>
         {tasks.map((t, idx) => (
           <TableRow
@@ -273,13 +273,16 @@ function Tasks({
             className="cursor-pointer hover:bg-purple-50 transition-colors"
           >
             <TableCell className="font-medium">{idx + 1}</TableCell>
+
             <TableCell>
               <img
                 src={t.trigger?.type?.image}
                 width={40}
                 className="rounded-md shadow-sm"
+                alt="trigger icon"
               />
             </TableCell>
+
             <TableCell>
               {t.action?.length > 0 ? (
                 <ul className="flex gap-2">
@@ -289,6 +292,7 @@ function Tasks({
                         src={a.action?.image}
                         width={30}
                         className="rounded-md shadow"
+                        alt="action icon"
                       />
                     </li>
                   ))}
@@ -297,10 +301,9 @@ function Tasks({
                 <span className="text-gray-400 italic">No actions</span>
               )}
             </TableCell>
+
             <TableCell className="flex items-center gap-2">
-              <span className="truncate max-w-[220px] text-gray-600">
-                {`${HOOKS_URL}/hooks/catch/${userId}/${t.id}`}
-              </span>
+              <span className="truncate max-w-[220px] text-gray-600"></span>
               <Button
                 variant="outline"
                 size="sm"
@@ -315,7 +318,8 @@ function Tasks({
                 Copy
               </Button>
             </TableCell>
-            <TableCell className="text-right">
+
+            <TableCell className="text-right pr-6">
               <Button
                 className="bg-gradient-to-r from-purple-600 to-orange-500 text-white hover:opacity-90 rounded-lg"
                 onClick={() => openTask(t.id)}
@@ -323,7 +327,7 @@ function Tasks({
                 Edit
               </Button>
               <Button
-                className="ml-3 bg-gradient-to-r bg-red-700 text-white hover:opacity-90 rounded-lg"
+                className="ml-3 bg-red-700 text-white hover:opacity-90 rounded-lg"
                 onClick={() =>
                   handleDeleteClick(t.id, t.name || `Task ${idx + 1}`)
                 }
@@ -337,7 +341,6 @@ function Tasks({
     </Table>
   );
 }
-
 
 /**
  * Modal component for delete confirmation.
