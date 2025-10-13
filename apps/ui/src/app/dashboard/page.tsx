@@ -29,6 +29,8 @@ export default function Dashboard() {
   const [taskNameToDelete, setTaskNameToDelete] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
 
+
+
   useEffect(() => {
     fetchTasks();
   }, []);
@@ -56,6 +58,8 @@ export default function Dashboard() {
     } catch (err: any) {
       setError(err instanceof Error ? err : new Error("Failed to fetch tasks"));
       setTasks([]);
+      toast.error(`Error fetching tasks: ${error?.message}`);
+
     } finally {
       setLoading(false);
     }
@@ -181,48 +185,48 @@ export default function Dashboard() {
   );
 }
 
-function useTasks(): [boolean, any[], Error | null, string] {
-  const [loading, setLoading] = useState(true);
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [error, setError] = useState<Error | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+// function useTasks(): [boolean, any[], Error | null, string] {
+//   const [loading, setLoading] = useState(true);
+//   const [tasks, setTasks] = useState<any[]>([]);
+//   const [error, setError] = useState<Error | null>(null);
+//   const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        setLoading(true);
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession();
+//   useEffect(() => {
+//     const fetchTasks = async () => {
+//       try {
+//         setLoading(true);
+//         const {
+//           data: { session },
+//           error: sessionError,
+//         } = await supabase.auth.getSession();
 
-        if (sessionError || !session?.access_token) {
-          throw new Error("Authentication required. Please log in.");
-        }
-        setUserId(session.user.id);
+//         if (sessionError || !session?.access_token) {
+//           throw new Error("Authentication required. Please log in.");
+//         }
+//         setUserId(session.user.id);
 
-        const res = await axios.get(`${BACKEND_URL}/api/v1/task/getTasks`, {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
+//         const res = await axios.get(`${BACKEND_URL}/api/v1/task/getTasks`, {
+//           headers: {
+//             Authorization: `Bearer ${session.access_token}`,
+//           },
+//         });
 
-        setTasks(res.data.tasks || []);
-      } catch (err: any) {
-        setError(
-          err instanceof Error ? err : new Error("Failed to fetch tasks")
-        );
-        setTasks([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+//         setTasks(res.data.tasks || []);
+//       } catch (err: any) {
+//         setError(
+//           err instanceof Error ? err : new Error("Failed to fetch tasks")
+//         );
+//         setTasks([]);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
 
-    fetchTasks();
-  }, []);
+//     fetchTasks();
+//   }, []);
 
-  return [loading, tasks, error, userId ?? ""];
-}
+//   return [loading, tasks, error, userId ?? ""];
+// }
 
 function Tasks({
   tasks,

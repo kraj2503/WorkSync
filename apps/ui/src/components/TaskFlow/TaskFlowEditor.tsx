@@ -11,6 +11,7 @@ import { TriggerSelector } from "./TriggerSelector";
 import { FlowHeader } from "./FlowHeader";
 import ActionModal from "./actionModal";
 import { useActionsAndTriggers, useAvailableActionsandTriggers } from "./hooks";
+import { toast } from "sonner";
 
 export default function TaskFlow({
   mode,
@@ -80,13 +81,20 @@ export default function TaskFlow({
 
 
     const endpoint = mode === "edit" ? "/update" : "/add";
-    await axios.post(`${BACKEND_URL}/api/v1/task${endpoint}`, payload, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "x-user-id": userId,
-      },
-    });
-
+    try {
+   
+      await axios.post(`${BACKEND_URL}/api/v1/task${endpoint}`, payload, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "x-user-id": userId,
+        },
+      });
+    }
+    catch(err:any){
+      console.error("Failed to create/update Task", err);
+      toast.error("Failed to create/update Task", err);
+    }
+      
     router.push("/dashboard");
   };
 

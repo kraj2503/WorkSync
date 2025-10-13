@@ -2,6 +2,7 @@
 import { BACKEND_URL } from "@repo/config";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface TaskItem {
   index: number;
@@ -64,6 +65,7 @@ export function useActionsAndTriggers(id: string, accessToken?: string | null) {
       })
       .catch((err) => {
         console.error("Error fetching existing task flow:", err);
+             toast.error(`Task fetching Error.`);
       })
       .finally(() => setIsLoading(false));
   }, [id, accessToken]);
@@ -81,15 +83,19 @@ export function useAvailableActionsandTriggers() {
     axios
       .get(`${BACKEND_URL}/api/v1/trigger/available`)
       .then((x) => setAvailableTrigger(x.data))
-      .catch((err) =>
-        console.error("Failed to fetch available triggers:", err)
-      );
-
+      .catch((err) => {
+        console.error("Error fetching available triggers", err);
+        toast.error(`Error fetching triggers`);
+      });
     // Fetch available actions
     axios
       .get(`${BACKEND_URL}/api/v1/action/available`)
       .then((x) => setAvailableActions(x.data))
-      .catch((err) => console.error("Failed to fetch available actions:", err));
+      .catch((err) => {
+        console.error("Failed to fetch available actions:", err)
+        toast.error(`Failed to fetch actions`);
+      })
+  
   }, []);
 
   return {

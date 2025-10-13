@@ -19,7 +19,7 @@ router.post("/add", async (req, res) => {
 
   const task = await client.task.create({
     data: {
-      userId: userId,
+      userId,
       trigger: {
         create: {
           triggerId: parsedData.data.trigger.availableTriggerId,
@@ -34,6 +34,7 @@ router.post("/add", async (req, res) => {
       },
     },
   });
+
   return res.json({
     task,
   });
@@ -135,35 +136,36 @@ router.post("/update", async (req, res) => {
     return res.status(411).json({
       message: "Invalid body",
     });
+console.log(parsedData);
 
-  const task = await client.$transaction(async (tx) => {
-    await tx.action.deleteMany({
-      where: { taskId: parsedData.data.id.taskId },
-    });
 
-    const updatedTask = await tx.task.update({
-      where: {
-        userId: parsedData.data.id.userId,
-        id: parsedData.data.id.taskId,
-      },
-      data: {
-        trigger: {
-          update: {
-            id: parsedData.data.trigger.availableTriggerId,
-          },
-        },
-        action: {
-          create: parsedData.data.actions.map((x, index) => ({
-            actionId: x.availableActionId,
-            sortingOrder: index,
-            metadata: x.actionMetadata,
-          })),
-        },
-      },
-    });
-
-    return updatedTask;
+  const task =await client.$transaction(async (tx) => {
+  await tx.action.deleteMany({
+    where: { taskId: parsedData.data.id.taskId },
   });
+
+  await tx.trigger.deleteMany({
+    where: { taskId: parsedData.data.id.taskId },
+  });
+
+  await tx.trigger.create({
+    data: {
+      taskId: parsedData.data.id.taskId,
+      triggerId: parsedData.data.trigger.availableTriggerId,
+      metadata: parsedData.data.trigger.triggerMetadata,
+    },
+  });
+
+  await tx.action.createMany({
+    data: parsedData.data.actions.map((x, index) => ({
+      taskId: parsedData.data.id.taskId,
+      actionId: x.availableActionId,
+      sortingOrder: x.order,
+      metadata: x.actionMetadata,
+    })),
+  });
+});
+
 
   return res.json({
     task,
