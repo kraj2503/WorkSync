@@ -19,13 +19,13 @@ model User {
 }
 
 model Task {
-  id      String    @id @default(uuid())
-  userId  String
-  action  Action[]
-  user    User      @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
-  taskRun TaskRun[]
-  trigger Trigger?
-  markedasDelete Boolean @default(false)
+  id             String    @id @default(uuid())
+  userId         String
+  action         Action[]
+  user           User      @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
+  taskRun        TaskRun[]
+  trigger        Trigger?
+  markedasDelete Boolean   @default(false)
 
   @@map("Task")
 }
@@ -90,8 +90,9 @@ model TaskRunOutbox {
   @@map("TaskRunOutbox")
 }
 
-
-model slackAI{
-  channelId String @unique
-  conversations Json 
+model slackAI {
+  id            String  @id @default(uuid())
+  channelId     String
+  conversations Json
+  isActive      Boolean @default(false)
 }
