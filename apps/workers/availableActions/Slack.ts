@@ -1,11 +1,8 @@
 // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
-import {
-  WebClient,
-  LogLevel,
-  type KnownBlock,
-} from "@slack/web-api";
+import { WebClient, LogLevel, type KnownBlock } from "@slack/web-api";
 import { App } from "@slack/bolt";
 import { CHATAI } from "../openAi";
+import { reset } from "../openAi/reset";
 
 const SLACK_XAPP = process.env.SLACK_XAPP;
 const SLACK_XOXB = process.env.SLACK_XOXB;
@@ -56,7 +53,7 @@ async function publishMessage(metadata: any) {
             type: "context",
             elements: [{ type: "mrkdwn", text: metadata.contextText }],
           } as KnownBlock)
-        : undefined
+        : undefined,
     ].filter((b): b is KnownBlock => !!b);
 
     const id = metadata.channelId;
@@ -87,14 +84,26 @@ app.event("app_mention", async ({ event, say }) => {
   console.log("📩 Message text:", event.text);
   console.log("🧭 Channel:", event.channel);
 
-  const reply = await CHATAI({
-    user: event.user ?? "",
-
-    ChannelId: event.channel,
-    userContext: event.text,
-  });
-
-  await say(reply);
+  console.log(event.text);
+  if (event.text.includes("/reset")) {
+    console.log("reset called");
+    
+    await reset(event.channel);
+    say("reset done!")
+  }
+  else {
+    
+    console.log(`ibnsied`);
+    
+    const reply = await CHATAI({
+      user: event.user ?? "",
+      
+      ChannelId: event.channel,
+      userContext: event.text,
+    });
+    
+    await say(reply);
+  }
 });
 
 (async () => {
